@@ -9,10 +9,9 @@ import 'package:dlsm_pof/common/index.dart';
 
 
 
-final permissionServiceProvider = Provider<PermissionService>((ref) {
-  Logger logger = ref.watch(loggerService);
+final permissionsServiceProvider = Provider<PermissionService>((ref) {
+  Logger logger = ref.watch(loggerServiceProvider);
   BatteryService batteryService = ref.watch(batteryServiceProvider);
-
   return PermissionService(batteryService, logger);
 });
 
@@ -27,54 +26,15 @@ class PermissionService {
     this._logger,
   );
 
-  //======================================
-  // Permission Checkers
-  //======================================
-  Future<bool> hasPermissions() async {
-    return await isLocationServiceEnabled() &&
-        await isLocationPermissionGranted() &&
-        await isBackgroundLocationPermissionGranted() &&
-        await isActivityRecognitionPermissionGranted() &&
-        await isBatterySaveModeDisabled() &&
-        await isBatteryOptimizationDisabled();
-  }
 
-  Future<bool> isLocationServiceEnabled() async {
-    return Permission.location.serviceStatus.isEnabled;
-  }
-
-  Future<bool> isLocationPermissionGranted() async {
-    return Permission.locationWhenInUse.isGranted;
-  }
-
-  Future<bool> isBackgroundLocationPermissionGranted() async {
-    return Permission.locationAlways.isGranted;
-  }
-
-  Future<bool> isActivityRecognitionPermissionGranted() async {
-    return Permission.activityRecognition.isGranted;
-  }
-
-  Future<bool> isBatterySaveModeDisabled() async {
-    return !(await _batteryService.isInBatterySaveMode());
-  }
-
-  Future<bool> isBatteryOptimizationDisabled() async {
-    return Permission.ignoreBatteryOptimizations.isGranted;
-  }
+  Future<bool> isLocationServiceEnabled() async => Permission.location.serviceStatus.isEnabled;
+  Future<bool> isLocationPermissionGranted() async => Permission.locationWhenInUse.isGranted;
+  Future<bool> isBackgroundLocationPermissionGranted() => Permission.locationAlways.isGranted;
+  Future<bool> isActivityRecognitionPermissionGranted() async => Permission.activityRecognition.isGranted;
+  Future<bool> isBatterySaveModeDisabled() async => !(await _batteryService.isInBatterySaveMode());
+  Future<bool> isBatteryOptimizationDisabled() async => Permission.ignoreBatteryOptimizations.isGranted;
 
 
-  //======================================
-  // Permission Requests
-  //======================================
-  Future<void> requestPermissions() async {
-    await openLocationServiceSettingIfDisabled();
-    await requestLocationPermission();
-    await requestBackgroundLocationPermission();
-
-    await requestActivityRecognitionPermission();
-    await requestDisableBatteryOptimization();
-  }
 
   Future<void> openLocationServiceSettingIfDisabled() async {
     bool isEnabled = await Geolocator.isLocationServiceEnabled();

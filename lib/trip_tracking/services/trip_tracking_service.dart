@@ -20,7 +20,7 @@ final tripTrackingServiceProvider = Provider<TripTrackingService>((ref) {
   ActivityRecognitionService activityRecognitionService = ref.watch(activityRecognitionServiceProvider);
   GeolocatorService geolocatorService = ref.watch(geolocatorServiceProvider);
   TrackingDataDA trackingDataDA = ref.watch(trackingDataDAProvider);
-  Logger logger = ref.watch(loggerService);
+  Logger logger = ref.watch(loggerServiceProvider);
 
   return TripTrackingService(foregroundTaskService, activityRecognitionService, geolocatorService, logger, trackingDataDA);
 });

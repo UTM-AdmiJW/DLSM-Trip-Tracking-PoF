@@ -10,7 +10,7 @@ import 'package:dlsm_pof/common/index.dart';
 
 
 final foregroundTaskServiceProvider = Provider<ForegroundTaskService>((ref) {
-  Logger logger = ref.watch(loggerService);
+  Logger logger = ref.watch(loggerServiceProvider);
   return ForegroundTaskService(logger);
 });
 
@@ -19,10 +19,7 @@ final foregroundTaskServiceProvider = Provider<ForegroundTaskService>((ref) {
 
 class ForegroundTaskService {
   final Logger _logger;
-
   ReceivePort? _receivePort;
-
-  Future<bool> get isRunningService => FlutterForegroundTask.isRunningService;
 
 
 
@@ -68,6 +65,11 @@ class ForegroundTaskService {
       notificationText: text,
     );
   }
+
+  Future<bool> isRunning() async {
+    return await FlutterForegroundTask.isRunningService;
+  }
+
 
   Future<bool> refreshReceivePort() async {
     if ( !(await FlutterForegroundTask.isRunningService) ) return false;

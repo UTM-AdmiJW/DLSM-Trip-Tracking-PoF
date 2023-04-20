@@ -1,33 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../states/permissions_state.dart';
 import '../services/permission_service.dart';
 
 
-// TODO: Change to listen to the permission state, 
-// TODO: instead of having to pass in all the values through the constructor
 
 class PermissionsList extends ConsumerWidget {
-  final bool isLocationServiceEnabled;
-  final bool isLocationPermissionGranted;
-  final bool isBackgroundLocationPermissionGranted;
-  final bool isActivityRecognitionPermissionGranted;
-  final bool isBatterySaveModeDisabled;
-  final bool isBatteryOptimizationDisabled;
+
+  final PermissionsState permissions;
 
   const PermissionsList({
     super.key,
-    required this.isLocationServiceEnabled,
-    required this.isLocationPermissionGranted,
-    required this.isBackgroundLocationPermissionGranted,
-    required this.isActivityRecognitionPermissionGranted,
-    required this.isBatterySaveModeDisabled,
-    required this.isBatteryOptimizationDisabled,
+    required this.permissions,
   });
+
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    PermissionService permissionService = ref.watch(permissionServiceProvider);
+    PermissionService permissionService = ref.read(permissionsServiceProvider);
+    bool isLocationServiceEnabled = permissions.isLocationServiceEnabled;
+    bool isLocationPermissionGranted = permissions.isLocationPermissionGranted;
+    bool isBackgroundLocationPermissionGranted = permissions.isBackgroundLocationPermissionGranted;
+    bool isActivityRecognitionPermissionGranted = permissions.isActivityRecognitionPermissionGranted;
+    bool isBatterySaveModeDisabled = permissions.isBatterySaveModeDisabled;
+    bool isBatteryOptimizationDisabled = permissions.isBatteryOptimizationDisabled;
+
 
     return ListView(
       children: [

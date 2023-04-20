@@ -5,16 +5,16 @@ import '../services/permission_service.dart';
 
 
 
-final permissionsStateProvider = StateNotifierProvider<PermissionsNotifier, AsyncValue<Permissions>>((ref) {
-  PermissionService permissionState = ref.watch(permissionServiceProvider);
-  return PermissionsNotifier(permissionState);
+final permissionsStateProvider = StateNotifierProvider<PermissionsStateNotifier, AsyncValue<PermissionsState>>((ref) {
+  PermissionService permissionService = ref.watch(permissionsServiceProvider);
+  return PermissionsStateNotifier(permissionService);
 });
 
 
 
 
 @immutable
-class Permissions {
+class PermissionsState {
   final bool hasPermissions;
   final bool isLocationServiceEnabled;
   final bool isLocationPermissionGranted;
@@ -23,7 +23,7 @@ class Permissions {
   final bool isBatterySaveModeDisabled;
   final bool isBatteryOptimizationDisabled;
 
-  const Permissions({
+  const PermissionsState({
     this.hasPermissions = false,
     this.isLocationServiceEnabled = false,
     this.isLocationPermissionGranted = false,
@@ -32,35 +32,15 @@ class Permissions {
     this.isBatterySaveModeDisabled = false,
     this.isBatteryOptimizationDisabled = false,
   });
-
-  Permissions copyWith({
-    bool? hasPermissions,
-    bool? isLocationServiceEnabled,
-    bool? isLocationPermissionGranted,
-    bool? isBackgroundLocationPermissionGranted,
-    bool? isActivityRecognitionPermissionGranted,
-    bool? isBatterySaveModeDisabled,
-    bool? isBatteryOptimizationDisabled,
-  }) {
-    return Permissions(
-      hasPermissions: hasPermissions ?? this.hasPermissions,
-      isLocationServiceEnabled: isLocationServiceEnabled ?? this.isLocationServiceEnabled,
-      isLocationPermissionGranted: isLocationPermissionGranted ?? this.isLocationPermissionGranted,
-      isBackgroundLocationPermissionGranted: isBackgroundLocationPermissionGranted ?? this.isBackgroundLocationPermissionGranted,
-      isActivityRecognitionPermissionGranted: isActivityRecognitionPermissionGranted ?? this.isActivityRecognitionPermissionGranted,
-      isBatterySaveModeDisabled: isBatterySaveModeDisabled ?? this.isBatterySaveModeDisabled,
-      isBatteryOptimizationDisabled: isBatteryOptimizationDisabled ?? this.isBatteryOptimizationDisabled,
-    );
-  }
 }
 
 
 
-class PermissionsNotifier extends StateNotifier<AsyncValue<Permissions>> {
+class PermissionsStateNotifier extends StateNotifier<AsyncValue<PermissionsState>> {
   final PermissionService _permissionService;
 
 
-  PermissionsNotifier(
+  PermissionsStateNotifier(
     this._permissionService,
   ): super(const AsyncValue.loading()) {
     updatePermissions();
@@ -81,7 +61,7 @@ class PermissionsNotifier extends StateNotifier<AsyncValue<Permissions>> {
         isBackgroundLocationPermissionGranted && isActivityRecognitionPermissionGranted && 
         isBatterySaveModeDisabled && isBatteryOptimizationDisabled;
 
-      return Permissions(
+      return PermissionsState(
         hasPermissions: hasPermissions,
         isLocationServiceEnabled: isLocationServiceEnabled,
         isLocationPermissionGranted: isLocationPermissionGranted,

@@ -15,9 +15,14 @@ final tripDetectionServiceProvider = Provider<TripDetectionService>((ref) {
   ForegroundTaskService foregroundTaskService = ref.watch(foregroundTaskServiceProvider);
   ActivityRecognitionService activityRecognitionService = ref.watch(activityRecognitionServiceProvider);
   TripTrackingService tripTrackingService = ref.watch(tripTrackingServiceProvider);
-  Logger logger = ref.watch(loggerService);
+  Logger loggerService = ref.watch(loggerServiceProvider);
 
-  return TripDetectionService(foregroundTaskService, activityRecognitionService, logger, tripTrackingService);
+  return TripDetectionService(
+    foregroundTaskService, 
+    activityRecognitionService, 
+    loggerService, 
+    tripTrackingService
+  );
 });
 
 
@@ -39,8 +44,6 @@ class TripDetectionService {
   void begin() {
     _foregroundTaskService.updateForegroundTask("Checking for driving activity...");
 
-    // TODO: Remove this testing.
-    _tripTrackingService.begin();
     _activityRecognitionService.beginListening((activity) {
       _logger.i("Activity Update: ${activity.type.name}");
 

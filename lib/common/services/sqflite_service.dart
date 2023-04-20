@@ -8,24 +8,20 @@ import '../interfaces/sqflite_da.dart';
 
 
 
+const version = 1;
+
+
 final sqfliteServiceProvider = Provider<SqfliteService>((ref) {
-  Logger log = ref.watch(loggerService);
-  return SqfliteService(log);
+  return SqfliteService();
 });
 
 
 
 
 class SqfliteService {
-  final Logger _logger;
   Database? _database;
-
   final List<SqfliteDA> _dataAccess = [];
 
-
-  SqfliteService(this._logger);
-
-  
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -43,18 +39,16 @@ class SqfliteService {
       join(await getDatabasesPath(), 'dlsm.db'),
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
-      version: 1,
+      version: version,
     );
   }
 
 
   void _onCreate(Database db, int version) async {
-    _logger.i("Sqflite: Running onCreate() - Schema version $version.");
     await _createTables(db);
   }
 
   void _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    _logger.i("Sqflite: Running onUpgrade() - Schema version $oldVersion to $newVersion.");
     await _dropExistingTables(db);
     await _createTables(db);
   }

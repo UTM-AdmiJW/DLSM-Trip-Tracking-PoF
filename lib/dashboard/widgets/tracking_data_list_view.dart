@@ -29,7 +29,6 @@ class TrackingDataListView extends StatelessWidget {
 
         return ListTile(
           title: Text( trackingData.timestamp.toString().substring(0, 19) ),
-          onTap: () {},
           subtitle: Text(
             "(${trackingData.latitude.toStringAsFixed(5)}, ${trackingData.longitude.toStringAsFixed(5)}) | "
             "Speed: ${trackingData.speed.toStringAsFixed(2)} m/s | "

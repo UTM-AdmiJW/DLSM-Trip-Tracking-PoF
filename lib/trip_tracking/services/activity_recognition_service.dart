@@ -8,7 +8,7 @@ import 'package:dlsm_pof/common/index.dart';
 
 
 final activityRecognitionServiceProvider = Provider<ActivityRecognitionService>((ref) {
-  Logger logger = ref.watch(loggerService);
+  Logger logger = ref.watch(loggerServiceProvider);
   return ActivityRecognitionService(logger);
 });
 

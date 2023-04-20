@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../services/trip_detection_service.dart';
 
-import 'package:dlsm_pof/main.dart';
+import 'package:dlsm_pof/config/index.dart';
 
 
 

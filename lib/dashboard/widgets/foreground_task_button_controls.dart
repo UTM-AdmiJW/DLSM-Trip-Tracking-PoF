@@ -1,4 +1,3 @@
-import 'package:dlsm_pof/permissions/states/permissions_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,69 +10,55 @@ class ForegroundTaskButtonControls extends ConsumerStatefulWidget {
   @override ConsumerState<ForegroundTaskButtonControls> createState() => _ForegroundTaskButtonControlsState();
 }
 
-
-
 class _ForegroundTaskButtonControlsState extends ConsumerState<ForegroundTaskButtonControls> {
 
-  String state = "Loading...";
+  ForegroundTaskService get _foregroundTaskService => ref.read(foregroundTaskServiceProvider);
+  ForegroundTaskStateNotifier get _foregroundTaskStateNotifier => ref.read(foregroundTaskStateProvider.notifier);
 
-  void loadForegroundState() async {
-    if ( ref.read(permissionsStateProvider).isLoading ) {
-      setState(() { state = "Loading..."; });
-    } else if ( ref.read(permissionsStateProvider).hasError ) {
-      setState(() { state = "Error"; });
-    } else if ( !ref.read(permissionsStateProvider).asData!.value.hasPermissions ) {
-      setState(() { state = "No Permission!"; });
-    } else if (await ref.read(foregroundTaskServiceProvider).isRunningService ) {
-      setState(() { state = "Running"; });
-    } else {
-      setState(() { state = "Stopped"; });
-    }
+
+  Future<void> updateForegroundTaskState() async {
+    _foregroundTaskStateNotifier.updateForegroundTaskState();
   }
 
-
   void navigateToPermissionsRoute() async {
-    await Navigator
-      .pushNamed(context, "/permissions")
-      .then((_) => loadForegroundState());
+    await Navigator.pushNamed(context, "/permissions");
   }
 
   void startForegroundTask() async {
-    final ForegroundTaskService foregroundTaskService = ref.read(foregroundTaskServiceProvider);
-    await foregroundTaskService.startForegroundTask();
-    loadForegroundState();
+    await _foregroundTaskService.startForegroundTask();
+    updateForegroundTaskState();
   }
 
   void stopForegroundTask() async {
-    final ForegroundTaskService foregroundTaskService = ref.read(foregroundTaskServiceProvider);
-    await foregroundTaskService.stopForegroundTask();
-    loadForegroundState();
+    await _foregroundTaskService.stopForegroundTask();
+    updateForegroundTaskState();
   }
 
 
   @override
   void initState() {
     super.initState();
-    loadForegroundState();
+    updateForegroundTaskState();
   }
 
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<Permissions> permissions = ref.watch(permissionsStateProvider);
+    final foregroundTaskState = ref.watch(foregroundTaskStateProvider);
 
-    String state = 
-      permissions.isLoading ? "Loading..." :
-      permissions.hasError ? "Error" :
-      !permissions.asData!.value.hasPermissions ? "No Permission!" :
-      false ? "Running" : // TODO: This should be checked from state
-      "Stopped";
-
+    String state = foregroundTaskState.when(
+      data: (data) => data.status == ForegroundTaskStatus.running ? "Running" : 
+        data.status == ForegroundTaskStatus.stopped ? "Stopped" : 
+        data.status == ForegroundTaskStatus.noPermission ? "No Permission" : 
+        "Unknown",
+      loading: () => "Loading",
+      error: (error, stack) => "Error",
+    );
 
     return Column(
       children: [
         Text(
-          "Foreground service: $state", 
+          "Foreground service: $state",
           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w300)
         ),
         Row(
@@ -84,24 +69,20 @@ class _ForegroundTaskButtonControlsState extends ConsumerState<ForegroundTaskBut
               onPressed: navigateToPermissionsRoute, 
               child: const Text("Permissions"),
             ),
+            const SizedBox(width: 8),
 
-            if (state == "Stopped") ...[
-              const SizedBox(width: 8),
+            if (state == "Stopped") 
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
                 onPressed: startForegroundTask, 
                 child: const Text("Start Process")
               ),
-            ],
-            // TODO: Remove this true
-            if (state == "Running" || true) ...[
-              const SizedBox(width: 8),
+            if (state == "Running") 
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
                 onPressed: stopForegroundTask, 
                 child: const Text("Stop Process")
               ),
-            ],
           ],
         ),
       ],

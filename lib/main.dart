@@ -3,16 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import './app_theme.dart';
-
+import 'package:dlsm_pof/config/index.dart';
 import 'package:dlsm_pof/trip_tracking/index.dart';
 import 'package:dlsm_pof/dashboard/index.dart';
 import 'package:dlsm_pof/permissions/index.dart';
-
-
-// Top level provider container, which is used to provide dependencies to the entire app.
-// Intiialized here since the foreground task service needs it to access the foreground handler.
-ProviderContainer providerContainer = ProviderContainer();
 
 
 
@@ -22,6 +16,12 @@ Future<void> main() async {
 }
 
 
+final routes = <String, WidgetBuilder>{
+  '/': (BuildContext context) => const DashboardPage(),
+  '/permissions': (BuildContext context) => const PermissionsPage(),
+};
+
+
 
 
 class DlsmPOF extends ConsumerStatefulWidget {
@@ -29,36 +29,30 @@ class DlsmPOF extends ConsumerStatefulWidget {
   @override ConsumerState<DlsmPOF> createState() => DlsmPOFState();
 }
 
-
-
 class DlsmPOFState extends ConsumerState<DlsmPOF> {
+
+  ActivityRecognitionService get _activityRecognitionService => ref.read(activityRecognitionServiceProvider);
+  PermissionsStateNotifier get _permissionsStateNotifier => ref.read(permissionsStateProvider.notifier);
+  ForegroundTaskService get _foregroundTaskService => ref.read(foregroundTaskServiceProvider);
+  AsyncValue<PermissionsState> get _permissionsState => ref.read(permissionsStateProvider);
+
 
   @override
   void initState() {
     super.initState();
-
-    // After the first frame is rendered, ensure the application is initialized.
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      PermissionService permissionService = providerContainer.read(permissionServiceProvider);
-      if (!await permissionService.hasPermissions()) return;
-
-      ForegroundTaskService foregroundTaskService = providerContainer.read(foregroundTaskServiceProvider);
-      foregroundTaskService.startForegroundTask();
-    });
+    WidgetsBinding.instance.addPostFrameCallback(_startForegroundTaskIfPermissionsAllow);
   }
 
 
   @override
   void dispose() {
-    ActivityRecognitionService activityRecognitionService = ref.read(activityRecognitionServiceProvider);
-    activityRecognitionService.stopListening();
+    _activityRecognitionService.stopListening();
     super.dispose();
   }
 
 
   @override
   Widget build(BuildContext context) {
-
     return UncontrolledProviderScope(
       container: providerContainer,
       child: WithForegroundTask(
@@ -66,13 +60,22 @@ class DlsmPOFState extends ConsumerState<DlsmPOF> {
           title: 'DLSM Proof of Concept',
           theme: appTheme,
           initialRoute: '/',
-          routes: {
-            '/': (context) => const DashboardPage(),
-            '/permissions': (context) => const PermissionsPage(),
-          }
+          routes: routes,
+          navigatorObservers: [routeObserver],
         ),
       ),
     );
+  }
+
+
+
+  void _startForegroundTaskIfPermissionsAllow(Duration _) async {
+    await _permissionsStateNotifier.updatePermissions();
+
+    final permissionsState = _permissionsState.asData?.value;
+    if (permissionsState == null || !permissionsState.hasPermissions) return;
+    
+    _foregroundTaskService.startForegroundTask();
   }
 }
 
