@@ -8,7 +8,7 @@
 
 - Follow flutter naming convention. Directories and files should be named in `lowercase_with_underscores` format. The same goes for files. For classes, use `UpperCamelCase` format.
 
-- When using providers, there should be 2 types:
+- When using riverpod, there should be 2 types of providers:
 
     **1. Services**
 
