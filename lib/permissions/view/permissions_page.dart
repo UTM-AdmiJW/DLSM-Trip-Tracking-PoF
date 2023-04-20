@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../services/permissions_state.dart';
+import '../states/permissions_state.dart';
 import '../widgets/permissions_list.dart';
 
 

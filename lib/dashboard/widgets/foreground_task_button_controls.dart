@@ -1,4 +1,4 @@
-import 'package:dlsm_pof/permissions/services/permissions_state.dart';
+import 'package:dlsm_pof/permissions/states/permissions_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

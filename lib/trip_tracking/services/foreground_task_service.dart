@@ -10,7 +10,7 @@ import 'package:dlsm_pof/common/index.dart';
 
 
 final foregroundTaskServiceProvider = Provider<ForegroundTaskService>((ref) {
-  Logger logger = ref.watch(loggerProvider);
+  Logger logger = ref.watch(loggerService);
   return ForegroundTaskService(logger);
 });
 

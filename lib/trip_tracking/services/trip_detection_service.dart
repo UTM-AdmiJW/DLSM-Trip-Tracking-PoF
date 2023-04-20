@@ -15,7 +15,7 @@ final tripDetectionServiceProvider = Provider<TripDetectionService>((ref) {
   ForegroundTaskService foregroundTaskService = ref.watch(foregroundTaskServiceProvider);
   ActivityRecognitionService activityRecognitionService = ref.watch(activityRecognitionServiceProvider);
   TripTrackingService tripTrackingService = ref.watch(tripTrackingServiceProvider);
-  Logger logger = ref.watch(loggerProvider);
+  Logger logger = ref.watch(loggerService);
 
   return TripDetectionService(foregroundTaskService, activityRecognitionService, logger, tripTrackingService);
 });

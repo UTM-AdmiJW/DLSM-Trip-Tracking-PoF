@@ -3,13 +3,13 @@ import 'package:path/path.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 
-import './logger_provider.dart';
+import './logger_service.dart';
 import '../interfaces/sqflite_da.dart';
 
 
 
 final sqfliteServiceProvider = Provider<SqfliteService>((ref) {
-  Logger log = ref.watch(loggerProvider);
+  Logger log = ref.watch(loggerService);
   return SqfliteService(log);
 });
 

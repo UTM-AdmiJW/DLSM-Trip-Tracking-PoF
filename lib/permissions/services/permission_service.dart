@@ -10,7 +10,7 @@ import 'package:dlsm_pof/common/index.dart';
 
 
 final permissionServiceProvider = Provider<PermissionService>((ref) {
-  Logger logger = ref.watch(loggerProvider);
+  Logger logger = ref.watch(loggerService);
   BatteryService batteryService = ref.watch(batteryServiceProvider);
 
   return PermissionService(batteryService, logger);
