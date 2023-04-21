@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 
-// Top level provider container, which is used to provide dependencies to the entire app.
-// Intiialized here since the foreground task service needs it to access the foreground handler.
-ProviderContainer providerContainer = ProviderContainer();
+// The ProviderContainer is a global object that stores all the providers
+// and allows us to read and modify them.
+// Although it is a bad practice to read provider values without using ref, the application
+// requirements needs this.
+final ProviderContainer providerContainer = ProviderContainer();

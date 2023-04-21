@@ -1,21 +1,19 @@
 
 
-class TrackingData {
+class TripPoint {
   final int? id;
   final DateTime timestamp;
   final double latitude;
   final double longitude;
   final double speed;
-  final String activity;
 
 
-  const TrackingData({
+  const TripPoint({
     this.id,
     required this.timestamp,
     required this.latitude,
     required this.longitude,
     required this.speed,
-    required this.activity,
   });
 
 
@@ -25,7 +23,6 @@ class TrackingData {
       'latitude': latitude,
       'longitude': longitude,
       'speed': speed,
-      'activity': activity,
     };
 
     if (id != null) map['id'] = id;
@@ -35,6 +32,14 @@ class TrackingData {
 
   @override
   String toString() {
-    return 'TrackingData(id: $id, timestamp: $timestamp, latitude: $latitude, longitude: $longitude, speed: $speed, activity: $activity)';
+    return '''
+      TripPoint(
+        id: $id,
+        timestamp: $timestamp, 
+        latitude: $latitude, 
+        longitude: $longitude, 
+        speed: $speed
+      )
+    ''';
   }
 }

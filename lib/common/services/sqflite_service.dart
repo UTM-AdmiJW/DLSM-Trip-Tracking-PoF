@@ -3,7 +3,6 @@ import 'package:path/path.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 
-import './logger_service.dart';
 import '../interfaces/sqflite_da.dart';
 
 

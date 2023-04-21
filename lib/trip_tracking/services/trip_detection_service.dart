@@ -12,16 +12,16 @@ import 'package:dlsm_pof/common/index.dart';
 
 
 final tripDetectionServiceProvider = Provider<TripDetectionService>((ref) {
+  Logger loggerService = ref.watch(loggerServiceProvider);
   ForegroundTaskService foregroundTaskService = ref.watch(foregroundTaskServiceProvider);
   ActivityRecognitionService activityRecognitionService = ref.watch(activityRecognitionServiceProvider);
   TripTrackingService tripTrackingService = ref.watch(tripTrackingServiceProvider);
-  Logger loggerService = ref.watch(loggerServiceProvider);
 
   return TripDetectionService(
+    loggerService, 
     foregroundTaskService, 
     activityRecognitionService, 
-    loggerService, 
-    tripTrackingService
+    tripTrackingService,
   );
 });
 
@@ -35,9 +35,9 @@ class TripDetectionService {
   final TripTrackingService _tripTrackingService;
 
   TripDetectionService(
+    this._logger,
     this._foregroundTaskService, 
     this._activityRecognitionService,
-    this._logger,
     this._tripTrackingService,
   );
 

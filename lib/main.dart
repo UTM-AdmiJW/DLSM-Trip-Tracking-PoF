@@ -5,21 +5,30 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:dlsm_pof/config/index.dart';
 import 'package:dlsm_pof/trip_tracking/index.dart';
-import 'package:dlsm_pof/dashboard/index.dart';
 import 'package:dlsm_pof/permissions/index.dart';
 
 
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const DlsmPOF());
+  runApp(const DlsmCore());
 }
 
 
-final routes = <String, WidgetBuilder>{
-  '/': (BuildContext context) => const DashboardPage(),
-  '/permissions': (BuildContext context) => const PermissionsPage(),
-};
+
+class DlsmCore extends StatelessWidget {
+  const DlsmCore({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return UncontrolledProviderScope(
+      container: providerContainer,
+      child: const WithForegroundTask(
+        child: DlsmPOF(),
+      ),
+    );
+  }
+}
 
 
 
@@ -53,17 +62,12 @@ class DlsmPOFState extends ConsumerState<DlsmPOF> {
 
   @override
   Widget build(BuildContext context) {
-    return UncontrolledProviderScope(
-      container: providerContainer,
-      child: WithForegroundTask(
-        child: MaterialApp(
-          title: 'DLSM Proof of Concept',
-          theme: appTheme,
-          initialRoute: '/',
-          routes: routes,
-          navigatorObservers: [routeObserver],
-        ),
-      ),
+    return MaterialApp(
+      title: 'DLSM Proof of Concept',
+      theme: appTheme,
+      routes: routes,
+      initialRoute: '/',
+      navigatorObservers: [routeObserver],
     );
   }
 

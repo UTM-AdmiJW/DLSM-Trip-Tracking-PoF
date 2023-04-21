@@ -5,6 +5,9 @@ import 'package:logger/logger.dart';
 export 'package:logger/logger.dart';
 
 
+final Logger globalLogger = Logger();
+
+
 final loggerServiceProvider = Provider<Logger>((ref) {
-  return Logger();
+  return globalLogger;
 });

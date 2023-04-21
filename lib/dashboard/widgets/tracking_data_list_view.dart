@@ -6,13 +6,13 @@ import 'package:dlsm_pof/trip_tracking/index.dart';
 
 
 
-class TrackingDataListView extends StatelessWidget {
-  final List<TrackingData> trackingDataList;
+class TripPointListView extends StatelessWidget {
+  final List<TripPoint> tripPointList;
   final bool isFetching;
   
-  const TrackingDataListView({
+  const TripPointListView({
     super.key,
-    required this.trackingDataList,
+    required this.tripPointList,
     required this.isFetching,
   });
 
@@ -23,16 +23,15 @@ class TrackingDataListView extends StatelessWidget {
     return ListView.builder(
       shrinkWrap: true,
       physics: const ClampingScrollPhysics(),
-      itemCount: trackingDataList.length,
+      itemCount: tripPointList.length,
       itemBuilder: (context, index) {
-        final trackingData = trackingDataList[index];
+        final trackingData = tripPointList[index];
 
         return ListTile(
           title: Text( trackingData.timestamp.toString().substring(0, 19) ),
           subtitle: Text(
             "(${trackingData.latitude.toStringAsFixed(5)}, ${trackingData.longitude.toStringAsFixed(5)}) | "
             "Speed: ${trackingData.speed.toStringAsFixed(2)} m/s | "
-            "Activity: ${trackingData.activity}"
           ),
         );
       },

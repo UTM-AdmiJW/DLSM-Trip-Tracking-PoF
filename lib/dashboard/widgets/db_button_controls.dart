@@ -16,16 +16,16 @@ class DbButtonControls extends ConsumerWidget {
   }) : super(key: key);
 
 
-  void deleteAllRows(TrackingDataDA trackingDataDA) async {
+  void deleteAllRows(TripPointDA trackingDataDA) async {
     onStart();
-    await trackingDataDA.deleteAllTrackingData();
+    await trackingDataDA.deleteAll();
     onComplete();
   }
 
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final trackingDataDA = ref.watch(trackingDataDAProvider);
+    final trackingDataDA = ref.watch(tripPointDAProvider);
 
     return Column(
       children: [

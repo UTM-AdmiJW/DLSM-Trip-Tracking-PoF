@@ -19,29 +19,34 @@ class DashboardPage extends ConsumerStatefulWidget {
 
 
 class _DashboardPageState extends ConsumerState<DashboardPage> with WidgetsBindingObserver, RouteAware {
+  
   int rowCount = 0;
   bool _isFetching = true;
-  List<TrackingData> trackingDataList = [];
+  List<TripPoint> tripPointList = [];
 
 
   void setIsFetching(bool isFetching) => setState(() { _isFetching = isFetching; });
 
-
+  
+  // TODO: Currently, it only shows the TripPoints in the database.
+  // TODO: The end product should show aggregated Trips instead. Long way to go.
   Future<void> updateData() async {
     setIsFetching(true);
 
-    TrackingDataDA trackingDataDA = ref.read(trackingDataDAProvider);
-    final rowCount = await trackingDataDA.getNumberOfRows() ?? 0;
-    final trackingDataList = await trackingDataDA.getAllTrackingData();
+    await updatePermissions();
+
+    TripPointDA tripPointDA = ref.read(tripPointDAProvider);
+    final rowCount = await tripPointDA.count();
+    final tripPointList = await tripPointDA.selectAll();
 
     setState(() {
       this.rowCount = rowCount;
-      this.trackingDataList = trackingDataList;
+      this.tripPointList = tripPointList;
     });
     setIsFetching(false);
   }
 
-  void updatePermissions() async {
+  Future<void> updatePermissions() async {
     final permissionStateNotifier = ref.read(permissionsStateProvider.notifier);
     await permissionStateNotifier.updatePermissions();
   }
@@ -105,7 +110,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with WidgetsBindi
             const ForegroundTaskButtonControls(),
             DbButtonControls(onStart: ()=> setIsFetching(true), onComplete: updateData),
             const SizedBox(height: 12),
-            TrackingDataListView(trackingDataList: trackingDataList, isFetching: _isFetching),
+            Center(child: Text('Row count: $rowCount')),
+            const SizedBox(height: 12),
+            TripPointListView(tripPointList: tripPointList, isFetching: _isFetching),
           ],
         ),
       ) 
