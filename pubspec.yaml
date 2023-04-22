@@ -18,6 +18,8 @@ dependencies:
   path: ^1.8.2
   permission_handler: ^10.2.0
   sqflite: ^2.2.6
+  douglas_peucker:
+    git: "https://github.com/AdmiJW/douglas-peucker-dart.git"
 
 dev_dependencies:
   flutter_test:

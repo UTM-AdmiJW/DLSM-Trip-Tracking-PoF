@@ -1,18 +1,19 @@
 
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data_access/trip_point_da.dart';
 import '../model/trip_point.dart';
+import '../services/trip_point_relevancy_evaluator_service.dart';
 
 
-// The number of latest TripPoints to be stored in the stack
+// The number of latest TripPoints to be stored in the stack for relevancy evaluation
 const int stackSize = 5;
 
 final tripPointStateProvider = StateNotifierProvider<TripPointStateNotifier, TripPointState>((ref) {
   TripPointDA tripPointDA = ref.watch(tripPointDAProvider);
-  return TripPointStateNotifier(tripPointDA);
+  TripPointRelevancyEvaluator tripPointRelevancyEvaluatorService = ref.watch(tripPointRelevancyEvaluatorServiceProvider);
+  return TripPointStateNotifier(tripPointDA, tripPointRelevancyEvaluatorService);
 });
 
 
@@ -30,18 +31,20 @@ class TripPointState {
 
 class TripPointStateNotifier extends StateNotifier<TripPointState> {
   final TripPointDA _tripPointDA;
+  final TripPointRelevancyEvaluator _tripPointRelevancyEvaluatorService;
 
   TripPointStateNotifier(
     this._tripPointDA,
+    this._tripPointRelevancyEvaluatorService,
   ): super(const TripPointState());
 
 
   Future<bool> addTripPoint(TripPoint tripPoint) async {
-    bool isRelevant = TripPointRelevancyEvaluator.isRelevant(tripPoint, state.mostRecentPoints);
-    if (!isRelevant) return false;
+    RelevancyResult relevancyResult = _tripPointRelevancyEvaluatorService.isRelevant(tripPoint, state.mostRecentPoints);
+    if (!relevancyResult.isRelevant) return false;
 
     // Add to database
-    await _tripPointDA.insert(tripPoint);
+    await _tripPointDA.insert(tripPoint.copyWith(filter: relevancyResult.filterName));
 
     // Append to most recent trip points 
     List<TripPoint> buffer = [...state.mostRecentPoints, tripPoint];
@@ -62,82 +65,5 @@ class TripPointStateNotifier extends StateNotifier<TripPointState> {
 
   void clearMostRecentTripPoints() async {
     state = const TripPointState();
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-class TripPointRelevancyEvaluator {
-  
-  static List filters = [
-    firstPointFilter,
-    timeIntervalFilter,
-    distanceFilter,
-    accelerationFilter,
-  ];
-
-  static bool isRelevant(TripPoint tripPoint, List<TripPoint> recentTripPoints) {
-    bool relevant = false;
-    bool continueFiltering = true;
-
-    bool next() {
-      continueFiltering = true;
-      return false;
-    }
-
-    for (Function filter in filters) {
-      if (!continueFiltering) break;
-      continueFiltering = false;
-      relevant = filter(tripPoint, recentTripPoints, next);
-    }
-
-    return relevant;
-  }
-  
-
-  //======================
-  // Filters
-  //======================
-
-  // If this is the first TripPoint, then it is relevant
-  static bool firstPointFilter(TripPoint tripPoint, List<TripPoint> recentTripPoints, Function next) {
-    if (recentTripPoints.isEmpty) return true;
-    return next();
-  }
-
-  // If it has been more than 30 seconds since the last TripPoint, then it is relevant
-  static bool timeIntervalFilter(TripPoint tripPoint, List<TripPoint> recentTripPoints, Function next) {
-    TripPoint lastTripPoint = recentTripPoints.last;
-    Duration timeInterval = tripPoint.timestamp.difference(lastTripPoint.timestamp);
-    if (timeInterval.inSeconds > 30) return true;
-    return next();
-  }
-
-  // If the distance between the last TripPoint and this TripPoint is more than 50 meters, then it is relevant
-  static bool distanceFilter(TripPoint tripPoint, List<TripPoint> recentTripPoints, Function next) {
-    TripPoint lastTripPoint = recentTripPoints.last;
-    double distance = Geolocator.distanceBetween(
-      lastTripPoint.latitude, lastTripPoint.longitude,
-      tripPoint.latitude, tripPoint.longitude,
-    );
-    if (distance > 50) return true;
-    return next();
-  }
-
-
-  // If the acceleration between the last TripPoint and this TripPoint is more than 5 m/s^2, then it is relevant
-  static bool accelerationFilter(TripPoint tripPoint, List<TripPoint> recentTripPoints, Function next) {
-    TripPoint lastTripPoint = recentTripPoints.last;
-    double acceleration = (tripPoint.speed - lastTripPoint.speed) / tripPoint.timestamp.difference(lastTripPoint.timestamp).inSeconds;
-    if ( acceleration.abs() > 5) return true;
-    return next();
   }
 }

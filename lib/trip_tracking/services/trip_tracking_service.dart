@@ -1,6 +1,5 @@
 
 import 'dart:async';
-import 'package:dlsm_pof/common/index.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,6 +8,7 @@ import '../services/geolocator_service.dart';
 import '../model/trip_point.dart';
 import '../states/trip_point_state.dart';
 
+import 'package:dlsm_pof/common/index.dart';
 
 
 
@@ -27,7 +27,7 @@ final tripTrackingServiceProvider = Provider<TripTrackingService>((ref) {
 
 
 class TripTrackingService {
-  static const int _expiryMinutes = 10;
+  static const int _expiryMinutes = 5;
   static const int _distanceFilter = 20;
 
   final ForegroundTaskService _foregroundTaskService;

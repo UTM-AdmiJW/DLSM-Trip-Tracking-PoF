@@ -40,7 +40,6 @@ class DlsmPOF extends ConsumerStatefulWidget {
 
 class DlsmPOFState extends ConsumerState<DlsmPOF> {
 
-  ActivityRecognitionService get _activityRecognitionService => ref.read(activityRecognitionServiceProvider);
   PermissionsStateNotifier get _permissionsStateNotifier => ref.read(permissionsStateProvider.notifier);
   ForegroundTaskService get _foregroundTaskService => ref.read(foregroundTaskServiceProvider);
   AsyncValue<PermissionsState> get _permissionsState => ref.read(permissionsStateProvider);
@@ -50,13 +49,6 @@ class DlsmPOFState extends ConsumerState<DlsmPOF> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(_startForegroundTaskIfPermissionsAllow);
-  }
-
-
-  @override
-  void dispose() {
-    _activityRecognitionService.stopListening();
-    super.dispose();
   }
 
 

@@ -10,3 +10,5 @@ export 'services/activity_recognition_service.dart';
 
 export 'states/foreground_task_state.dart';
 export 'states/trip_point_state.dart';
+
+export 'views/trip_points_page.dart';

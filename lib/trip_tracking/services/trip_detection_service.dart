@@ -48,8 +48,9 @@ class TripDetectionService {
       _logger.i("Activity Update: ${activity.type.name}");
 
       if (
-        activity.type == ActivityType.IN_VEHICLE 
-        && !_tripTrackingService.isTripTracingLogicRunning
+        activity.type == ActivityType.IN_VEHICLE &&
+        activity.confidence != ActivityConfidence.LOW &&
+        !_tripTrackingService.isTripTracingLogicRunning
       ) {
         _tripTrackingService.begin();
       }

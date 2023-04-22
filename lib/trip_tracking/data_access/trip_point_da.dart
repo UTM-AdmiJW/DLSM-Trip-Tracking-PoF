@@ -22,7 +22,8 @@ class TripPointDA extends SqfliteDA {
       timestamp TEXT NOT NULL,
       latitude REAL NOT NULL,
       longitude REAL NOT NULL,
-      speed REAL NOT NULL
+      speed REAL NOT NULL,
+      filter TEXT
     )
   ''';
 
@@ -71,6 +72,7 @@ class TripPointDA extends SqfliteDA {
     return List.generate(maps.length, (i) {
       return TripPoint(
         id: maps[i]['id'],
+        filter: maps[i]['filter'],
         timestamp: DateTime.parse(maps[i]['timestamp']),
         latitude: maps[i]['latitude'],
         longitude: maps[i]['longitude'],

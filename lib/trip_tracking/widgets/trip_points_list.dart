@@ -1,20 +1,22 @@
 
 import 'package:flutter/material.dart';
 
-import 'package:dlsm_pof/trip_tracking/index.dart';
+import '../model/trip_point.dart';
 
 
 
 
-class TripPointListView extends StatelessWidget {
+class TripPointList extends StatelessWidget {
   final List<TripPoint> tripPointList;
   final bool isFetching;
   
-  const TripPointListView({
+  const TripPointList({
     super.key,
     required this.tripPointList,
     required this.isFetching,
   });
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +34,7 @@ class TripPointListView extends StatelessWidget {
           subtitle: Text(
             "(${trackingData.latitude.toStringAsFixed(5)}, ${trackingData.longitude.toStringAsFixed(5)}) | "
             "Speed: ${trackingData.speed.toStringAsFixed(2)} m/s | "
+            "Filter: ${trackingData.filter}",
           ),
         );
       },

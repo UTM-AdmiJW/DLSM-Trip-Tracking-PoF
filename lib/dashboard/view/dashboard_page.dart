@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../widgets/foreground_task_button_controls.dart';
-import '../widgets/db_button_controls.dart';
-import '../widgets/tracking_data_list_view.dart';
+import '../widgets/trip_point_button_controls.dart';
 
 import 'package:dlsm_pof/config/index.dart';
 import 'package:dlsm_pof/permissions/index.dart';
@@ -18,41 +17,15 @@ class DashboardPage extends ConsumerStatefulWidget {
 }
 
 
+// TODO: The dashboard should show Trips. Not Ongoing TripPoints.
+// TODO: The foreground task logic should be in the main widget, not dashboard.
+
 class _DashboardPageState extends ConsumerState<DashboardPage> with WidgetsBindingObserver, RouteAware {
   
-  int rowCount = 0;
-  bool _isFetching = true;
-  List<TripPoint> tripPointList = [];
-
-
-  void setIsFetching(bool isFetching) => setState(() { _isFetching = isFetching; });
-
-  
-  // TODO: Currently, it only shows the TripPoints in the database.
-  // TODO: The end product should show aggregated Trips instead. Long way to go.
-  Future<void> updateData() async {
-    setIsFetching(true);
-
-    await updatePermissions();
-
-    TripPointDA tripPointDA = ref.read(tripPointDAProvider);
-    final rowCount = await tripPointDA.count();
-    final tripPointList = await tripPointDA.selectAll();
-
-    setState(() {
-      this.rowCount = rowCount;
-      this.tripPointList = tripPointList;
-    });
-    setIsFetching(false);
-  }
-
   Future<void> updatePermissions() async {
     final permissionStateNotifier = ref.read(permissionsStateProvider.notifier);
     await permissionStateNotifier.updatePermissions();
   }
-
-
-
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -64,11 +37,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with WidgetsBindi
   @override void didPopNext() => updatePermissions();
 
 
-
   @override
   void initState() {
     super.initState();
-    updateData();
 
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -76,7 +47,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with WidgetsBindi
       foregroundTaskService.refreshReceivePort();
     });
   }
-
+  
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -103,16 +74,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with WidgetsBindi
         centerTitle: true,
       ),
       body: RefreshIndicator(
-        onRefresh: updateData,
+        onRefresh: updatePermissions,
         child: ListView(
           padding: const EdgeInsets.all(8),
-          children: [
-            const ForegroundTaskButtonControls(),
-            DbButtonControls(onStart: ()=> setIsFetching(true), onComplete: updateData),
-            const SizedBox(height: 12),
-            Center(child: Text('Row count: $rowCount')),
-            const SizedBox(height: 12),
-            TripPointListView(tripPointList: tripPointList, isFetching: _isFetching),
+          children: const [
+            ForegroundTaskButtonControls(),
+            TripPointButtonControls(),
           ],
         ),
       ) 
