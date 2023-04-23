@@ -6,6 +6,5 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 abstract class RiverpodStateNotifier<T> extends StateNotifier<T> {
   final StateNotifierProviderRef ref;
-
   RiverpodStateNotifier(T state, this.ref) : super(state);
 }

@@ -7,6 +7,4 @@ import 'package:logger/logger.dart';
 final Logger globalLogger = Logger();
 
 // This is a Riverpod provider that can be used to inject the global logger instance
-final loggerServiceProvider = Provider<Logger>((ref) {
-  return globalLogger;
-});
+final loggerServiceProvider = Provider<Logger>((ref)=> globalLogger);

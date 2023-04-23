@@ -20,7 +20,6 @@ class SqfliteService extends RiverpodService {
   Database? _database;
   final List<SqfliteDA> _dataAccess = [];
 
-
   SqfliteService(ProviderRef ref) : super(ref);
 
 

@@ -7,7 +7,6 @@ import '../widgets/trip_point_button_controls.dart';
 
 import 'package:dlsm_pof/config/index.dart';
 import 'package:dlsm_pof/permissions/index.dart';
-import 'package:dlsm_pof/trip/foreground_task/index.dart';
 
 
 
@@ -17,8 +16,9 @@ class DashboardPage extends ConsumerStatefulWidget {
 }
 
 
+
+
 // TODO: The dashboard should show Trips. Not Ongoing TripPoints.
-// TODO: The foreground task logic should be in the main widget, not dashboard.
 
 class _DashboardPageState extends ConsumerState<DashboardPage> with WidgetsBindingObserver, RouteAware {
   
@@ -40,12 +40,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with WidgetsBindi
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ForegroundTaskService foregroundTaskService = ref.read(foregroundTaskServiceProvider);
-      foregroundTaskService.refreshReceivePort();
-    });
   }
   
   @override
@@ -56,12 +51,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with WidgetsBindi
 
   @override
   void dispose() {
-    ForegroundTaskService foregroundTaskService = ref.read(foregroundTaskServiceProvider);
-    foregroundTaskService.closeReceivePort();
-
     WidgetsBinding.instance.removeObserver(this);
     routeObserver.unsubscribe(this);
-
     super.dispose();
   }
 

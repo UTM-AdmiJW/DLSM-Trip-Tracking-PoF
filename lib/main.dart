@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:dlsm_pof/common/index.dart';
 import 'package:dlsm_pof/config/index.dart';
 import 'package:dlsm_pof/trip/foreground_task/index.dart';
 import 'package:dlsm_pof/permissions/index.dart';
@@ -41,6 +41,7 @@ class DlsmPOF extends ConsumerStatefulWidget {
 class DlsmPOFState extends ConsumerState<DlsmPOF> {
 
   PermissionsStateNotifier get _permissionsStateNotifier => ref.read(permissionsStateProvider.notifier);
+  ForegroundTaskStateNotifier get _foregroundTaskStateNotifier => ref.read(foregroundTaskStateProvider.notifier);
   ForegroundTaskService get _foregroundTaskService => ref.read(foregroundTaskServiceProvider);
   AsyncValue<PermissionsState> get _permissionsState => ref.read(permissionsStateProvider);
 
@@ -48,7 +49,18 @@ class DlsmPOFState extends ConsumerState<DlsmPOF> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(_startForegroundTaskIfPermissionsAllow);
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _startForegroundTaskIfPermissionsAllow();
+      await _foregroundTaskService.refreshReceivePort();
+    });
+  }
+
+
+  @override
+  void dispose() {
+    _foregroundTaskService.closeReceivePort();
+    super.dispose();
   }
 
 
@@ -65,13 +77,15 @@ class DlsmPOFState extends ConsumerState<DlsmPOF> {
 
 
 
-  void _startForegroundTaskIfPermissionsAllow(Duration _) async {
+  Future<void> _startForegroundTaskIfPermissionsAllow() async {
     await _permissionsStateNotifier.updatePermissions();
 
     final permissionsState = _permissionsState.asData?.value;
     if (permissionsState == null || !permissionsState.hasPermissions) return;
     
-    _foregroundTaskService.startForegroundTask();
+    await _foregroundTaskService.startForegroundTask();
+
+    _foregroundTaskStateNotifier.updateForegroundTaskState();
   }
 }
 

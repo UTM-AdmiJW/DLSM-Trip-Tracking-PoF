@@ -12,10 +12,16 @@ final foregroundTaskServiceProvider = Provider<ForegroundTaskService>((ref)=> Fo
 
 
 
+typedef ReceivePortListenerFn = void Function(dynamic message);
+
 
 class ForegroundTaskService extends RiverpodService {
   Logger get _logger => ref.read(loggerServiceProvider);
+
   ReceivePort? _receivePort;
+  final List<ReceivePortListenerFn> _receivePortListeners = [];
+
+  Future<bool> get isRunning async => FlutterForegroundTask.isRunningService;
 
 
   ForegroundTaskService(ProviderRef ref): super(ref) {
@@ -53,7 +59,7 @@ class ForegroundTaskService extends RiverpodService {
     return FlutterForegroundTask.stopService();
   }
 
-  // update Service
+  /// update the foreground task notification text
   Future<bool> updateForegroundTask(String text) {
     return FlutterForegroundTask.updateService(
       notificationTitle: _notificationTitle,
@@ -61,15 +67,20 @@ class ForegroundTaskService extends RiverpodService {
     );
   }
 
-  Future<bool> isRunning() async {
-    return await FlutterForegroundTask.isRunningService;
-  }
-
-
   Future<bool> refreshReceivePort() async {
     if ( !(await FlutterForegroundTask.isRunningService) ) return false;
     return _registerReceivePort( FlutterForegroundTask.receivePort );
   }
+
+  void addReceivePortListener(ReceivePortListenerFn listener) {
+    _receivePortListeners.add(listener);
+  }
+
+  void removeReceivePortListener(ReceivePortListenerFn listener) {
+    _receivePortListeners.remove(listener);
+  }
+
+  
 
   Future<T?> getData<T>(String key) async {
     return await FlutterForegroundTask.getData<T>(key: key);
@@ -86,25 +97,23 @@ class ForegroundTaskService extends RiverpodService {
 
 
 
+
+
   bool _registerReceivePort(ReceivePort? newReceivePort) {
     if (newReceivePort == null) return false;
 
     closeReceivePort();
     _receivePort = newReceivePort;
-    _registerReceiverPortListener();
+    _registerReceiverPortListeners();
 
     return _receivePort != null;
   }
 
-  void _registerReceiverPortListener() {
-    // From the receivePort, you can receive the data sent from the TaskHandler via sendPort.
+
+  void _registerReceiverPortListeners() {
     _receivePort?.listen((message) {
-      if (message is String) {
-        if (message == 'onNotificationPressed') {
-          _logger.i('onNotificationPressed');
-        }
-      } else if (message is DateTime) {
-        _logger.i('timestamp: ${message.toString()}');
+      for (ReceivePortListenerFn listener in _receivePortListeners) {
+        listener(message);
       }
     });
   }

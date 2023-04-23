@@ -54,7 +54,7 @@ class ForegroundTaskStateNotifier extends RiverpodStateNotifier<AsyncValue<Foreg
       error: (error, stack) => state = AsyncValue.error(error, stack),
       data: (data) async {
         if (data.hasPermissions) {
-          state = await _foregroundTaskService.isRunning() ?
+          state = await _foregroundTaskService.isRunning ?
             const AsyncValue.data(ForegroundTaskState(status: ForegroundTaskStatus.running)) :
             const AsyncValue.data(ForegroundTaskState(status: ForegroundTaskStatus.stopped));
         } else {

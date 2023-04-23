@@ -14,6 +14,8 @@
 
     Services are singleton objects that contain reusable logic. For example, `TripTrackingService` that provides methods to start and stop trip tracking.
 
+    - Services are provided the simplest provider type: `Provider`. 
+
     - Services should be suffixed with `Service`, as such:
 
         - File name follows `lowercase_with_underscores` format. For example, `trip_tracking_service.dart`.
@@ -29,6 +31,8 @@
     **2. States**
 
     States are the single source of truth, singleton objects that contain the state of the application. For example, `PermissionState` that provides the current permission status of the app.
+
+    - States are provided using `StateNotifierProvider` provider type.
 
     - States should be suffixed with `State`, as such:
 

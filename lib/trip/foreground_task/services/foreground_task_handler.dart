@@ -54,7 +54,9 @@ class ForegroundTaskHandler extends RiverpodTaskHandlerService {
 
   // Called when the notification button on the Android platform is pressed.
   @override
-  void onButtonPressed(String id) {}
+  void onButtonPressed(String id) {
+    _sendPort?.send(id);
+  }
 
 
   // Called when the notification itself on the Android platform is pressed.
@@ -64,7 +66,6 @@ class ForegroundTaskHandler extends RiverpodTaskHandlerService {
   @override
   void onNotificationPressed() {
     FlutterForegroundTask.launchApp("/");
-    _sendPort?.send('onNotificationPressed');
   }
 }
 

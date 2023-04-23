@@ -6,6 +6,5 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 abstract class RiverpodService {
   final ProviderRef ref;
-
   RiverpodService(this.ref);
 }
