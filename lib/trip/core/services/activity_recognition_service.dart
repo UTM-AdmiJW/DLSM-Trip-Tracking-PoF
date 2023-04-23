@@ -19,6 +19,7 @@ class ActivityRecognitionService extends RiverpodService {
   FlutterActivityRecognition get activityRecognition => FlutterActivityRecognition.instance;
   Activity get currentActivity => _currentActivity;
   bool get isListening => _activityStreamSubscription != null;
+  bool get isInVehicle => _currentActivity.type == ActivityType.IN_VEHICLE;
 
 
   ActivityRecognitionService(ProviderRef ref) : super(ref);

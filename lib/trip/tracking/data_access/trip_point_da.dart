@@ -20,7 +20,11 @@ class TripPointDA extends SqfliteDA {
       latitude REAL NOT NULL,
       longitude REAL NOT NULL,
       speed REAL NOT NULL,
-      filter TEXT
+      isDistracted INTEGER NOT NULL,
+      acceleration REAL NOT NULL,
+      deceleration REAL NOT NULL,
+      cornering REAL NOT NULL,
+      totalDistance REAL NOT NULL
     )
   ''';
 
@@ -68,11 +72,15 @@ class TripPointDA extends SqfliteDA {
     return List.generate(maps.length, (i) {
       return TripPoint(
         id: maps[i]['id'],
-        filter: maps[i]['filter'],
         timestamp: DateTime.parse(maps[i]['timestamp']),
         latitude: maps[i]['latitude'],
         longitude: maps[i]['longitude'],
         speed: maps[i]['speed'],
+        isDistracted: maps[i]['isDistracted'] == 1,
+        acceleration: maps[i]['acceleration'],
+        deceleration: maps[i]['deceleration'],
+        cornering: maps[i]['cornering'],
+        totalDistance: maps[i]['totalDistance'],
       );
     });
   }

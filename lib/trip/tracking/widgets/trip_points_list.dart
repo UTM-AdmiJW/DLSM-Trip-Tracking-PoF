@@ -34,7 +34,10 @@ class TripPointList extends StatelessWidget {
           subtitle: Text(
             "(${trackingData.latitude.toStringAsFixed(5)}, ${trackingData.longitude.toStringAsFixed(5)}) | "
             "Speed: ${trackingData.speed.toStringAsFixed(2)} m/s | "
-            "Filter: ${trackingData.filter}",
+            "Acceleration: ${trackingData.acceleration?.toStringAsFixed(2)} m/s² | "
+            "Deceleration: ${trackingData.deceleration?.toStringAsFixed(2)} m/s² | "
+            "Cornering: ${trackingData.cornering?.toStringAsFixed(2)} | "
+            "Total Distance: ${trackingData.totalDistance?.toStringAsFixed(2)} m"
           ),
         );
       },

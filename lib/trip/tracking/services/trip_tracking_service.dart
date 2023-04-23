@@ -2,12 +2,15 @@
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 
-import '../model/trip_point.dart';
-import '../states/trip_point_state.dart';
+import '../services/trip_point_service.dart';
 
 import 'package:dlsm_pof/common/index.dart';
 import 'package:dlsm_pof/trip/core/index.dart';
 import 'package:dlsm_pof/trip/foreground_task/index.dart';
+
+
+const int _expiryMinutes = 5;
+const int _distanceFilter = 10;
 
 
 
@@ -16,16 +19,13 @@ final tripTrackingServiceProvider = Provider<TripTrackingService>((ref) => TripT
 
 
 class TripTrackingService extends RiverpodService {
-  static const int _expiryMinutes = 5;
-  static const int _distanceFilter = 20;
-
+  
   StreamSubscription<Position>? _positionStreamSubscription;
   Timer? _expiryTimer;
 
-  Logger get _logger => ref.read(loggerServiceProvider);
   ForegroundTaskService get _foregroundTaskService => ref.read(foregroundTaskServiceProvider);
   GeolocatorService get _geolocatorService => ref.read(geolocatorServiceProvider);
-  TripPointStateNotifier get _tripPointStateNotifier => ref.read(tripPointStateProvider.notifier);
+  TripPointService get _tripPointService => ref.read(tripPointServiceProvider);
   
   bool get isTripTracingLogicRunning => _positionStreamSubscription != null;
 
@@ -33,7 +33,9 @@ class TripTrackingService extends RiverpodService {
 
 
 
-  void begin() {
+  Future<void> begin() async {
+    await _tripPointService.reset();
+
     _foregroundTaskService.updateForegroundTask("Your trip is being tracked...");
     _setTimer();
 
@@ -56,17 +58,8 @@ class TripTrackingService extends RiverpodService {
 
 
   Future<void> _positionStreamListener (Position position) async {
-    TripPoint tripPoint = TripPoint(
-      latitude: position.latitude,
-      longitude: position.longitude,
-      timestamp: DateTime.now().toLocal(),
-      speed: position.speed,
-    );
-
-    _logger.i('Point: ${tripPoint.toString()}');
-  
-    bool isAdded = await _tripPointStateNotifier.addTripPoint(tripPoint);
-    if (!isAdded) return;
+    bool isRecordedIntoDB = await _tripPointService.processPoint(position);
+    if (!isRecordedIntoDB) return;
     _setTimer();
   }
 
