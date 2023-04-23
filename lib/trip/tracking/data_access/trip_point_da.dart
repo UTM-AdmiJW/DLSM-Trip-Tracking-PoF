@@ -1,15 +1,12 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../model/trip_point.dart';
 
 import 'package:dlsm_pof/common/index.dart';
 
 
-final tripPointDAProvider = Provider<TripPointDA>((ref) {
-  SqfliteService sqfliteService = ref.watch(sqfliteServiceProvider);
-  return TripPointDA(sqfliteService);
-});
+final tripPointDAProvider = Provider<TripPointDA>((ref)=> TripPointDA(ref));
+
 
 
 class TripPointDA extends SqfliteDA {
@@ -27,8 +24,7 @@ class TripPointDA extends SqfliteDA {
     )
   ''';
 
-
-  TripPointDA(SqfliteService sqfliteService) : super(sqfliteService);
+  TripPointDA(ProviderRef ref) : super(ref);
 
   @override
   Future<void> createTable(Database db) async => await db.execute(createTableQuery);

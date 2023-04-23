@@ -1,4 +1,5 @@
 
+import 'package:dlsm_pof/permissions/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,9 +16,11 @@ class PermissionsPage extends ConsumerStatefulWidget {
 
 class _PermissionsPageState extends ConsumerState<PermissionsPage> with WidgetsBindingObserver {
 
+  PermissionsStateNotifier get _permissionsStateNotifier => ref.read(permissionsStateProvider.notifier);
+
+
   void updatePermissions() async {
-    final permissionStateNotifier = ref.read(permissionsStateProvider.notifier);
-    await permissionStateNotifier.updatePermissions();
+    _permissionsStateNotifier.updatePermissions();
   }
 
 
@@ -27,7 +30,7 @@ class _PermissionsPageState extends ConsumerState<PermissionsPage> with WidgetsB
     
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(permissionsStateProvider.notifier).updatePermissions();
+      _permissionsStateNotifier.updatePermissions();
     });
   }
 
@@ -58,7 +61,7 @@ class _PermissionsPageState extends ConsumerState<PermissionsPage> with WidgetsB
         centerTitle: true,
       ),
       body: RefreshIndicator(
-        onRefresh: ref.read(permissionsStateProvider.notifier).updatePermissions,
+        onRefresh: _permissionsStateNotifier.updatePermissions,
         child: permissions.when(
           data: (permissions)=> PermissionsList(permissions: permissions),
           error: (err, stack)=> const Center(child: Text('Error')),

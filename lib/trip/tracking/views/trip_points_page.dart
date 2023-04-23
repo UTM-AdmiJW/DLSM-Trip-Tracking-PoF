@@ -17,7 +17,6 @@ class TripPointsPage extends ConsumerStatefulWidget {
 
 class _TripPointsPageState extends ConsumerState<TripPointsPage> {
 
-
   int rowCount = 0;
   bool _isFetching = true;
   List<TripPoint> tripPointList = [];

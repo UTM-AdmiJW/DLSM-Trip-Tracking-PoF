@@ -4,22 +4,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../interfaces/sqflite_da.dart';
+import '../interfaces/riverpod_service.dart';
 
 
 
 const version = 1;
 
 
-final sqfliteServiceProvider = Provider<SqfliteService>((ref) {
-  return SqfliteService();
-});
+final sqfliteServiceProvider = Provider<SqfliteService>((ref) => SqfliteService(ref));
 
 
 
 
-class SqfliteService {
+class SqfliteService extends RiverpodService {
   Database? _database;
   final List<SqfliteDA> _dataAccess = [];
+
+
+  SqfliteService(ProviderRef ref) : super(ref);
 
 
   Future<Database> get database async {
@@ -28,9 +30,9 @@ class SqfliteService {
     return _database!;
   }
 
+
   void registerDataAccess(SqfliteDA da) => _dataAccess.add(da);
   void unregisterDataAccess(SqfliteDA da) => _dataAccess.remove(da);
-
 
 
   Future<void> _initializeDatabase() async {
@@ -43,20 +45,23 @@ class SqfliteService {
   }
 
 
-  void _onCreate(Database db, int version) async {
+  Future<void> _onCreate(Database db, int version) async {
     await _createTables(db);
   }
 
-  void _onUpgrade(Database db, int oldVersion, int newVersion) async {
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     await _dropExistingTables(db);
     await _createTables(db);
   }
+
 
   Future<void> _dropExistingTables(Database db) async {
     for (SqfliteDA da in _dataAccess) {
       await da.dropTableIfExists(db);
     }
   }
+  
 
   Future<void> _createTables(Database db) async {
     for (SqfliteDA da in _dataAccess) {
@@ -64,5 +69,3 @@ class SqfliteService {
     }
   }
 }
-
-

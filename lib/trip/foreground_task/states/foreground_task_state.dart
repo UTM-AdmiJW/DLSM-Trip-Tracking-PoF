@@ -1,18 +1,18 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../services/foreground_task_service.dart';
 import '../enums/foreground_task_status.dart';
+import '../services/foreground_task_service.dart';
 
+import 'package:dlsm_pof/common/index.dart';
 import 'package:dlsm_pof/permissions/index.dart';
 
 
 
 final foregroundTaskStateProvider = StateNotifierProvider<ForegroundTaskStateNotifier, AsyncValue<ForegroundTaskState>>((ref) {
-  ForegroundTaskService foregroundTaskService = ref.watch(foregroundTaskServiceProvider);
   AsyncValue<PermissionsState> permissionsState = ref.watch(permissionsStateProvider);
-  return ForegroundTaskStateNotifier(foregroundTaskService, permissionsState);
+
+  return ForegroundTaskStateNotifier(permissionsState, ref);
 });
 
 
@@ -31,14 +31,16 @@ class ForegroundTaskState {
 
 
 
-class ForegroundTaskStateNotifier extends StateNotifier<AsyncValue<ForegroundTaskState>> {
-  final ForegroundTaskService _foregroundTaskService;
+class ForegroundTaskStateNotifier extends RiverpodStateNotifier<AsyncValue<ForegroundTaskState>> {
   final AsyncValue<PermissionsState> _permissionsState;
 
+  ForegroundTaskService get _foregroundTaskService => ref.read(foregroundTaskServiceProvider);
+
+
   ForegroundTaskStateNotifier(
-    this._foregroundTaskService,
     this._permissionsState,
-  ): super(const AsyncValue.loading()) {
+    StateNotifierProviderRef ref
+  ): super(const AsyncValue.loading(), ref) {
     updateForegroundTaskState();
   }
 

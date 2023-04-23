@@ -7,7 +7,7 @@ import '../widgets/trip_point_button_controls.dart';
 
 import 'package:dlsm_pof/config/index.dart';
 import 'package:dlsm_pof/permissions/index.dart';
-import 'package:dlsm_pof/trip_tracking/index.dart';
+import 'package:dlsm_pof/trip/foreground_task/index.dart';
 
 
 

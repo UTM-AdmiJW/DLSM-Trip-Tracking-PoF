@@ -1,49 +1,36 @@
 
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../services/foreground_task_service.dart';
-import '../services/geolocator_service.dart';
 import '../model/trip_point.dart';
 import '../states/trip_point_state.dart';
 
 import 'package:dlsm_pof/common/index.dart';
+import 'package:dlsm_pof/trip/core/index.dart';
+import 'package:dlsm_pof/trip/foreground_task/index.dart';
 
 
 
-final tripTrackingServiceProvider = Provider<TripTrackingService>((ref) {
-  ForegroundTaskService foregroundTaskService = ref.watch(foregroundTaskServiceProvider);
-  GeolocatorService geolocatorService = ref.watch(geolocatorServiceProvider);
-  TripPointStateNotifier tripPointStateNotifier = ref.watch(tripPointStateProvider.notifier);
-
-  return TripTrackingService(
-    foregroundTaskService, 
-    geolocatorService,
-    tripPointStateNotifier,
-  );
-});
+final tripTrackingServiceProvider = Provider<TripTrackingService>((ref) => TripTrackingService(ref));
 
 
 
-class TripTrackingService {
+class TripTrackingService extends RiverpodService {
   static const int _expiryMinutes = 5;
   static const int _distanceFilter = 20;
-
-  final ForegroundTaskService _foregroundTaskService;
-  final GeolocatorService _geolocatorService;
-  final TripPointStateNotifier _tripPointStateNotifier;
-
-  TripTrackingService(
-    this._foregroundTaskService, 
-    this._geolocatorService,
-    this._tripPointStateNotifier,
-  );
 
   StreamSubscription<Position>? _positionStreamSubscription;
   Timer? _expiryTimer;
 
+  Logger get _logger => ref.read(loggerServiceProvider);
+  ForegroundTaskService get _foregroundTaskService => ref.read(foregroundTaskServiceProvider);
+  GeolocatorService get _geolocatorService => ref.read(geolocatorServiceProvider);
+  TripPointStateNotifier get _tripPointStateNotifier => ref.read(tripPointStateProvider.notifier);
+  
   bool get isTripTracingLogicRunning => _positionStreamSubscription != null;
+
+  TripTrackingService(ProviderRef ref): super(ref);
+
 
 
   void begin() {
@@ -76,7 +63,7 @@ class TripTrackingService {
       speed: position.speed,
     );
 
-    globalLogger.i('Point: ${tripPoint.toString()}');
+    _logger.i('Point: ${tripPoint.toString()}');
   
     bool isAdded = await _tripPointStateNotifier.addTripPoint(tripPoint);
     if (!isAdded) return;

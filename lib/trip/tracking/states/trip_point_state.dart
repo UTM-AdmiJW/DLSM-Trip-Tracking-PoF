@@ -1,19 +1,20 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data_access/trip_point_da.dart';
 import '../model/trip_point.dart';
 import '../services/trip_point_relevancy_evaluator_service.dart';
+
+import 'package:dlsm_pof/common/index.dart';
+
+
 
 
 // The number of latest TripPoints to be stored in the stack for relevancy evaluation
 const int stackSize = 5;
 
 final tripPointStateProvider = StateNotifierProvider<TripPointStateNotifier, TripPointState>((ref) {
-  TripPointDA tripPointDA = ref.watch(tripPointDAProvider);
-  TripPointRelevancyEvaluator tripPointRelevancyEvaluatorService = ref.watch(tripPointRelevancyEvaluatorServiceProvider);
-  return TripPointStateNotifier(tripPointDA, tripPointRelevancyEvaluatorService);
+  return TripPointStateNotifier(ref);
 });
 
 
@@ -21,22 +22,17 @@ final tripPointStateProvider = StateNotifierProvider<TripPointStateNotifier, Tri
 @immutable
 class TripPointState {
   final List<TripPoint> mostRecentPoints;
-
-  const TripPointState({
-    this.mostRecentPoints = const [],
-  });
+  const TripPointState({ this.mostRecentPoints = const [] });
 }
 
 
 
-class TripPointStateNotifier extends StateNotifier<TripPointState> {
-  final TripPointDA _tripPointDA;
-  final TripPointRelevancyEvaluator _tripPointRelevancyEvaluatorService;
+class TripPointStateNotifier extends RiverpodStateNotifier<TripPointState> {
+  TripPointDA get _tripPointDA => ref.read(tripPointDAProvider);
+  TripPointRelevancyEvaluator get _tripPointRelevancyEvaluatorService => ref.read(tripPointRelevancyEvaluatorServiceProvider);
 
-  TripPointStateNotifier(
-    this._tripPointDA,
-    this._tripPointRelevancyEvaluatorService,
-  ): super(const TripPointState());
+  TripPointStateNotifier(StateNotifierProviderRef ref) : super(const TripPointState(), ref);
+
 
 
   Future<bool> addTripPoint(TripPoint tripPoint) async {
@@ -53,8 +49,6 @@ class TripPointStateNotifier extends StateNotifier<TripPointState> {
 
     return true;
   }
-
-
 
 
   Future<void> clearTripPoints() async {

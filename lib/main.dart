@@ -4,7 +4,7 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:dlsm_pof/config/index.dart';
-import 'package:dlsm_pof/trip_tracking/index.dart';
+import 'package:dlsm_pof/trip/foreground_task/index.dart';
 import 'package:dlsm_pof/permissions/index.dart';
 
 

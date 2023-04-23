@@ -1,16 +1,16 @@
 
-import 'package:flutter_activity_recognition/flutter_activity_recognition.dart' as activity_recognition;
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_activity_recognition/flutter_activity_recognition.dart' as activity_recognition;
 
-import '../services/activity_recognition_service.dart';
 import '../model/trip_point.dart';
+
+import 'package:dlsm_pof/common/index.dart';
+import 'package:dlsm_pof/trip/core/index.dart';
 
 
 
 final tripPointRelevancyEvaluatorServiceProvider = Provider<TripPointRelevancyEvaluator>((ref) {
-  ActivityRecognitionService activityRecognitionService = ref.watch(activityRecognitionServiceProvider);
-  return TripPointRelevancyEvaluator(activityRecognitionService);
+  return TripPointRelevancyEvaluator(ref);
 });
 
 
@@ -25,20 +25,21 @@ typedef _NextFn = RelevancyResult Function();
 typedef _FilterFn = RelevancyResult Function(TripPoint tripPoint, List<TripPoint> recentTripPoints, _NextFn next);
 
 
-class TripPointRelevancyEvaluator {
+
+
+class TripPointRelevancyEvaluator extends RiverpodService {
   
-  final ActivityRecognitionService _activityRecognitionService;
+  ActivityRecognitionService get _activityRecognitionService => ref.read(activityRecognitionServiceProvider);
   
   late final List<_FilterFn> _filters = [
     _firstPointFilter,
-    _timeIntervalFilter,
     _distanceFilter,
+    _timeIntervalFilter,
     _accelerationFilter,
   ];
 
-  TripPointRelevancyEvaluator(
-    this._activityRecognitionService,
-  );
+
+  TripPointRelevancyEvaluator(ProviderRef ref): super(ref);
 
 
 
@@ -72,14 +73,14 @@ class TripPointRelevancyEvaluator {
     return next();
   }
 
-  // If it has been more than 1 minutes since the last TripPoint, then it is relevant
+  // If it has been more than 1 minutes since the last TripPoint, then it is relevant,
   // Provided the activity is still "IN_VEHICLE"
   RelevancyResult _timeIntervalFilter(TripPoint tripPoint, List<TripPoint> recentTripPoints, _NextFn next) {
     TripPoint lastTripPoint = recentTripPoints.last;
     Duration timeInterval = tripPoint.timestamp.difference(lastTripPoint.timestamp);
 
     if (
-      timeInterval.inSeconds > 60 && 
+      timeInterval.inSeconds > 30 && 
       _activityRecognitionService.currentActivity.type == activity_recognition.ActivityType.IN_VEHICLE
     ) {
       return RelevancyResult(true, "Time Interval");
@@ -109,5 +110,5 @@ class TripPointRelevancyEvaluator {
   }
 
 
-  // TODO: A Turning Filter?
+  // TODO: A Sharp Turning/Cornering Filter?
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:dlsm_pof/trip_tracking/index.dart';
+import 'package:dlsm_pof/trip/foreground_task/index.dart';
 
 
 

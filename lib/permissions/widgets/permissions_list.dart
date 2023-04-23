@@ -10,6 +10,7 @@ class PermissionsList extends ConsumerWidget {
 
   final PermissionsState permissions;
 
+
   const PermissionsList({
     super.key,
     required this.permissions,
@@ -19,6 +20,7 @@ class PermissionsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     PermissionService permissionService = ref.read(permissionsServiceProvider);
+    
     bool isLocationServiceEnabled = permissions.isLocationServiceEnabled;
     bool isLocationPermissionGranted = permissions.isLocationPermissionGranted;
     bool isBackgroundLocationPermissionGranted = permissions.isBackgroundLocationPermissionGranted;

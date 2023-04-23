@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:dlsm_pof/dashboard/index.dart';
 import 'package:dlsm_pof/permissions/index.dart';
-import 'package:dlsm_pof/trip_tracking/index.dart';
+import 'package:dlsm_pof/trip/tracking/index.dart';
 
 
 final routes = <String, WidgetBuilder>{

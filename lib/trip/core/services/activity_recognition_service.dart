@@ -1,31 +1,27 @@
 import 'dart:async';
-
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_activity_recognition/flutter_activity_recognition.dart';
 
 import 'package:dlsm_pof/common/index.dart';
 
 
 
-final activityRecognitionServiceProvider = Provider<ActivityRecognitionService>((ref) {
-  Logger logger = ref.watch(loggerServiceProvider);
-  return ActivityRecognitionService(logger);
-});
+final activityRecognitionServiceProvider = Provider<ActivityRecognitionService>((ref) => ActivityRecognitionService(ref));
 
 
 
-class ActivityRecognitionService {
-  final Logger _logger;
+class ActivityRecognitionService extends RiverpodService {
 
   StreamSubscription<Activity>? _activityStreamSubscription;
   Activity _currentActivity = Activity.unknown;
+
+  Logger get _logger => ref.read(loggerServiceProvider);
 
   FlutterActivityRecognition get activityRecognition => FlutterActivityRecognition.instance;
   Activity get currentActivity => _currentActivity;
   bool get isListening => _activityStreamSubscription != null;
 
 
-  ActivityRecognitionService(this._logger);
+  ActivityRecognitionService(ProviderRef ref) : super(ref);
 
 
   void beginListening(Function(Activity) onData) {
@@ -48,4 +44,3 @@ class ActivityRecognitionService {
     _logger.i('Activity Recognition is stopped');
   }
 }
-

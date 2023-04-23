@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../services/permission_service.dart';
 
+import 'package:dlsm_pof/common/index.dart';
 
 
 final permissionsStateProvider = StateNotifierProvider<PermissionsStateNotifier, AsyncValue<PermissionsState>>((ref) {
-  PermissionService permissionService = ref.watch(permissionsServiceProvider);
-  return PermissionsStateNotifier(permissionService);
+  return PermissionsStateNotifier(ref);
 });
 
 
@@ -36,15 +35,15 @@ class PermissionsState {
 
 
 
-class PermissionsStateNotifier extends StateNotifier<AsyncValue<PermissionsState>> {
-  final PermissionService _permissionService;
+class PermissionsStateNotifier extends RiverpodStateNotifier<AsyncValue<PermissionsState>> {
+
+  PermissionService get _permissionService => ref.read(permissionsServiceProvider);
 
 
-  PermissionsStateNotifier(
-    this._permissionService,
-  ): super(const AsyncValue.loading()) {
+  PermissionsStateNotifier(StateNotifierProviderRef ref): super(const AsyncValue.loading(), ref) {
     updatePermissions();
   }
+
 
   Future<void> updatePermissions() async {
     state = const AsyncValue.loading();

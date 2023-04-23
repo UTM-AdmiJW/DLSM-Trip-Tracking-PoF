@@ -1,29 +1,24 @@
 import 'dart:isolate';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../services/foreground_task_handler.dart';
+import './foreground_task_handler.dart';
 
 import 'package:dlsm_pof/common/index.dart';
 
 
 
-final foregroundTaskServiceProvider = Provider<ForegroundTaskService>((ref) {
-  Logger logger = ref.watch(loggerServiceProvider);
-  return ForegroundTaskService(logger);
-});
+final foregroundTaskServiceProvider = Provider<ForegroundTaskService>((ref)=> ForegroundTaskService(ref));
 
 
 
 
-class ForegroundTaskService {
-  final Logger _logger;
+class ForegroundTaskService extends RiverpodService {
+  Logger get _logger => ref.read(loggerServiceProvider);
   ReceivePort? _receivePort;
 
 
-
-  ForegroundTaskService(this._logger) {
+  ForegroundTaskService(ProviderRef ref): super(ref) {
     FlutterForegroundTask.init(
       androidNotificationOptions: _androidNotificationOptions,
       iosNotificationOptions: _iosNotificationOptions,

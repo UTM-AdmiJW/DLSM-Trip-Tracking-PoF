@@ -1,15 +1,16 @@
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:dlsm_pof/common/index.dart';
+
+
+final geolocatorServiceProvider = Provider<GeolocatorService>((ref) => GeolocatorService(ref));
 
 
 
-final geolocatorServiceProvider = Provider<GeolocatorService>((ref) {
-  return GeolocatorService();
-});
+class GeolocatorService extends RiverpodService {
 
+  GeolocatorService(ProviderRef ref): super(ref);
 
-
-class GeolocatorService {
 
   Future<Position> getCurrentPosition({
     LocationAccuracy desiredAccuracy = LocationAccuracy.best
@@ -17,9 +18,11 @@ class GeolocatorService {
     return await Geolocator.getCurrentPosition(desiredAccuracy: desiredAccuracy);
   }
 
+
   Future<Position?> getLastKnownPosition() async {
     return await Geolocator.getLastKnownPosition();
   }
+
 
   Stream<Position> getPositionStream({ 
     int distanceFilter = 0, 

@@ -1,11 +1,10 @@
 import 'dart:isolate';
 import 'dart:async';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../services/trip_detection_service.dart';
-
+import 'package:dlsm_pof/common/index.dart';
 import 'package:dlsm_pof/config/index.dart';
+import 'package:dlsm_pof/trip/tracking/index.dart';
 
 
 
@@ -19,20 +18,18 @@ void startForegroundTaskCallback() {
 
 
 
-final foregroundTaskHandlerProvider = Provider<ForegroundTaskHandler>((ref) {
-  TripDetectionService tripDetectionService = ref.watch(tripDetectionServiceProvider);
-  return ForegroundTaskHandler(tripDetectionService);
-});
+final foregroundTaskHandlerProvider = Provider<ForegroundTaskHandler>((ref)=> ForegroundTaskHandler(ref));
 
 
-class ForegroundTaskHandler extends TaskHandler {
-  final TripDetectionService _tripDetectionService;
+
+// The task handler class must have access to the Riverpod container to obtain the TripDetectionService.
+class ForegroundTaskHandler extends RiverpodTaskHandlerService {
 
   SendPort? _sendPort;
 
-  ForegroundTaskHandler(
-    this._tripDetectionService
-  );
+  TripDetectionService get _tripDetectionService => ref.read(tripDetectionServiceProvider);
+
+  ForegroundTaskHandler(ProviderRef ref) : super(ref);
 
 
   // The onStart function is called when the task is started.

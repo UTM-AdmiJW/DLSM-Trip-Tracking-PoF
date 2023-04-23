@@ -1,6 +1,4 @@
 
-
-
 enum ForegroundTaskStatus {
   running,
   stopped,

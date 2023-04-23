@@ -1,6 +1,5 @@
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import './battery_service.dart';
 
@@ -9,22 +8,15 @@ import 'package:dlsm_pof/common/index.dart';
 
 
 
-final permissionsServiceProvider = Provider<PermissionService>((ref) {
-  Logger logger = ref.watch(loggerServiceProvider);
-  BatteryService batteryService = ref.watch(batteryServiceProvider);
-  return PermissionService(batteryService, logger);
-});
+final permissionsServiceProvider = Provider<PermissionService>((ref)=> PermissionService(ref));
 
 
 
-class PermissionService {
-  final BatteryService _batteryService;
-  final Logger _logger;
+class PermissionService extends RiverpodService {
+  BatteryService get _batteryService => ref.read(batteryServiceProvider);
+  Logger get _logger => ref.read(loggerServiceProvider);
 
-  PermissionService(
-    this._batteryService,
-    this._logger,
-  );
+  PermissionService(ProviderRef ref): super(ref);
 
 
   Future<bool> isLocationServiceEnabled() async => Permission.location.serviceStatus.isEnabled;
@@ -35,31 +27,35 @@ class PermissionService {
   Future<bool> isBatteryOptimizationDisabled() async => Permission.ignoreBatteryOptimizations.isGranted;
 
 
-
   Future<void> openLocationServiceSettingIfDisabled() async {
     bool isEnabled = await Geolocator.isLocationServiceEnabled();
     if (!isEnabled) await Geolocator.openLocationSettings();
   }
+
 
   Future<void> requestActivityRecognitionPermission() async {
     PermissionStatus status = await Permission.activityRecognition.request();
     _logPermissionStatusIfDenied('Activity Recognition', status);
   }
 
+
   Future<void> requestLocationPermission() async {
     PermissionStatus status = await Permission.locationWhenInUse.request();
     _logPermissionStatusIfDenied('Location When In Use', status);
   }
+
 
   Future<void> requestBackgroundLocationPermission() async {
     PermissionStatus status = await Permission.locationAlways.request();
     _logPermissionStatusIfDenied('Background Location', status);
   }
 
+
   Future<void> requestDisableBatteryOptimization() async {
     PermissionStatus status = await Permission.ignoreBatteryOptimizations.request();
     _logPermissionStatusIfDenied('Battery Optimization', status);
   }
+
 
   Future<void> requestSystemAlertWindowPermission() async {
     PermissionStatus status = await Permission.systemAlertWindow.request();
