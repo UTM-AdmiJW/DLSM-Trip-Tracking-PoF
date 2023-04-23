@@ -29,7 +29,7 @@ class TripPointState {
 
 class TripPointStateNotifier extends RiverpodStateNotifier<TripPointState> {
   TripPointDA get _tripPointDA => ref.read(tripPointDAProvider);
-  TripPointRelevancyEvaluator get _tripPointRelevancyEvaluatorService => ref.read(tripPointRelevancyEvaluatorServiceProvider);
+  TripPointRelevancyEvaluatorService get _tripPointRelevancyEvaluatorService => ref.read(tripPointRelevancyEvaluatorServiceProvider);
 
   TripPointStateNotifier(StateNotifierProviderRef ref) : super(const TripPointState(), ref);
 

@@ -1,0 +1,21 @@
+@startuml Trip Detection Service
+
+skinparam ConditionEndStyle hline
+
+start
+
+: Subscribe to user activity recognition service;
+repeat
+    : Listen to user activity recognition stream;
+    if (New user activity received?) then (yes)
+        : Update user activity recognition state;
+        if (activity == IN_VEHICLE **AND** \n confidence != LOW **AND** \n Trip Tracking Service is not running) then (yes)
+            : Start Trip Tracking Service;
+            : Trip Tracking Service logic;
+        else (no)
+        endif
+    else (no)
+    endif
+repeat while ()
+
+@enduml

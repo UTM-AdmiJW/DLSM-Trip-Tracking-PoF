@@ -1,0 +1,10 @@
+@startuml State Diagram
+
+hide empty description
+
+[*] --> TripDetection : App start and automatic tracking
+TripDetection -> TripTracking : activity = IN_VEHICLE
+TripDetection <- TripTracking : Timeout 5 minutes
+TripDetection --> [*] : App closed
+
+@enduml

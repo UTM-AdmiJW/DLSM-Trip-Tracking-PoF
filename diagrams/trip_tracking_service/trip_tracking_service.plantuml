@@ -1,0 +1,31 @@
+@startuml Trip Tracking Service
+
+skinparam ConditionEndStyle hline
+
+start
+
+: Subscribe to Geolocator;
+: Start trip tracking timeout: 5 minutes;
+: Listen to Geolocator's GPS coordinate and speed updates;
+
+split
+    repeat : Receive Geolocator's GPS coordinate and speed;
+        : Pass trip point into Trip Point State;
+
+        if (Is useful track point?) then (yes)
+            : Restart trip tracking timeout: 5 minutes;
+        else (no)
+        endif
+    repeat while ()
+    kill
+split again
+    while (Trip tracking timeout expired?) is (no)
+    endwhile (yes)
+    : Unsubscribe from Geolocator;
+    : Invoke Trip Post Processor Service Logic;
+    : Clear trip tracking timeout;
+    : Cleanup Trip Point State;
+    end
+end split
+
+@enduml

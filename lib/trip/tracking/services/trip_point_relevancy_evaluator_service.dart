@@ -9,8 +9,8 @@ import 'package:dlsm_pof/trip/core/index.dart';
 
 
 
-final tripPointRelevancyEvaluatorServiceProvider = Provider<TripPointRelevancyEvaluator>((ref) {
-  return TripPointRelevancyEvaluator(ref);
+final tripPointRelevancyEvaluatorServiceProvider = Provider<TripPointRelevancyEvaluatorService>((ref) {
+  return TripPointRelevancyEvaluatorService(ref);
 });
 
 
@@ -27,7 +27,7 @@ typedef _FilterFn = RelevancyResult Function(TripPoint tripPoint, List<TripPoint
 
 
 
-class TripPointRelevancyEvaluator extends RiverpodService {
+class TripPointRelevancyEvaluatorService extends RiverpodService {
   
   ActivityRecognitionService get _activityRecognitionService => ref.read(activityRecognitionServiceProvider);
   
@@ -39,7 +39,7 @@ class TripPointRelevancyEvaluator extends RiverpodService {
   ];
 
 
-  TripPointRelevancyEvaluator(ProviderRef ref): super(ref);
+  TripPointRelevancyEvaluatorService(ProviderRef ref): super(ref);
 
 
 
@@ -73,6 +73,17 @@ class TripPointRelevancyEvaluator extends RiverpodService {
     return next();
   }
 
+  // If the distance between the last TripPoint and this TripPoint is more than 50 meters, then it is relevant
+  RelevancyResult _distanceFilter(TripPoint tripPoint, List<TripPoint> recentTripPoints, _NextFn next) {
+    TripPoint lastTripPoint = recentTripPoints.last;
+    double distance = Geolocator.distanceBetween(
+      lastTripPoint.latitude, lastTripPoint.longitude,
+      tripPoint.latitude, tripPoint.longitude,
+    );
+    if (distance > 50) return RelevancyResult(true, "Distance");
+    return next();
+  }
+
   // If it has been more than 1 minutes since the last TripPoint, then it is relevant,
   // Provided the activity is still "IN_VEHICLE"
   RelevancyResult _timeIntervalFilter(TripPoint tripPoint, List<TripPoint> recentTripPoints, _NextFn next) {
@@ -89,23 +100,12 @@ class TripPointRelevancyEvaluator extends RiverpodService {
     return next();
   }
 
-  // If the distance between the last TripPoint and this TripPoint is more than 50 meters, then it is relevant
-  RelevancyResult _distanceFilter(TripPoint tripPoint, List<TripPoint> recentTripPoints, _NextFn next) {
-    TripPoint lastTripPoint = recentTripPoints.last;
-    double distance = Geolocator.distanceBetween(
-      lastTripPoint.latitude, lastTripPoint.longitude,
-      tripPoint.latitude, tripPoint.longitude,
-    );
-    if (distance > 50) return RelevancyResult(true, "Distance");
-    return next();
-  }
-
 
   // If the acceleration between the last TripPoint and this TripPoint is more than 5 m/s^2, then it is relevant
   RelevancyResult _accelerationFilter(TripPoint tripPoint, List<TripPoint> recentTripPoints, _NextFn next) {
     TripPoint lastTripPoint = recentTripPoints.last;
     double acceleration = (tripPoint.speed - lastTripPoint.speed) / tripPoint.timestamp.difference(lastTripPoint.timestamp).inSeconds;
-    if ( acceleration.abs() > 5) return RelevancyResult(true, "Acceleration");
+    if ( acceleration.abs() > 3 ) return RelevancyResult(true, "Acceleration");
     return next();
   }
 

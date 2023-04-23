@@ -1,12 +1,17 @@
 
+import 'package:douglas_peucker/douglas_peucker.dart';
 
-class TripPoint {
+
+class TripPoint implements IDpPoint {
   final int? id;
   final String? filter;
   final DateTime timestamp;
   final double latitude;
   final double longitude;
   final double speed;
+
+  @override double get x => latitude;
+  @override double get y => longitude;
 
 
   const TripPoint({

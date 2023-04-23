@@ -1,0 +1,25 @@
+@startuml Application Startup Flow
+
+skinparam ConditionEndStyle hline
+
+start
+
+if (Automatic Tracking ON?) then (yes)
+    if (Is Foreground Trip Detection Running?) then (yes)
+    else (no)
+        if (Is adequate permissions granted?) then (yes)
+            : Start Foreground Trip Detection service;
+            repeat
+                : Trip Detection Service Logic;
+            repeat while (Is Automatic Tracking turned OFF?) is (no)
+            -> yes;
+        else (no)
+            : Alert that automatic tracking is ON but not enough permissions is granted;
+        endif
+    endif
+else (no) 
+endif
+
+stop
+
+@enduml
