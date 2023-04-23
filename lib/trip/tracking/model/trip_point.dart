@@ -1,9 +1,10 @@
 
+import 'package:dlsm_pof/common/index.dart';
 import 'package:douglas_peucker/douglas_peucker.dart';
 
 
-class TripPoint implements IDpPoint {
-  final int? id;
+class TripPoint extends SqfliteModel implements IDpPoint {
+
   final DateTime timestamp;
   final double latitude;
   final double longitude;
@@ -18,8 +19,8 @@ class TripPoint implements IDpPoint {
   @override double get y => longitude;
 
 
-  const TripPoint({
-    this.id,
+  TripPoint({
+    int? id,
     required this.timestamp,
     required this.latitude,
     required this.longitude,
@@ -29,9 +30,10 @@ class TripPoint implements IDpPoint {
     this.deceleration,
     this.cornering,
     this.totalDistance,
-  });
+  }) : super(id: id);
 
 
+  @override
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
       'timestamp': timestamp.toIso8601String(),

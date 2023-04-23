@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:path/path.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../interfaces/sqflite_da.dart';
-import '../interfaces/riverpod_service.dart';
+import 'package:dlsm_pof/common/index.dart';
+import 'package:dlsm_pof/trip/tracking/index.dart';
+
 
 
 
@@ -17,10 +17,19 @@ final sqfliteServiceProvider = Provider<SqfliteService>((ref) => SqfliteService(
 
 
 class SqfliteService extends RiverpodService {
+
+  // Register all data access providers here
+  static final List<Provider<SqfliteDA>> _dataAccess = [
+    tripPointDAProvider,
+    historyTripDAProvider,
+    historyTripPointDAProvider,
+  ];
+  
   Database? _database;
-  final List<SqfliteDA> _dataAccess = [];
 
   SqfliteService(ProviderRef ref) : super(ref);
+
+  Logger get _logger => ref.read(loggerServiceProvider);
 
 
   Future<Database> get database async {
@@ -30,17 +39,18 @@ class SqfliteService extends RiverpodService {
   }
 
 
-  void registerDataAccess(SqfliteDA da) => _dataAccess.add(da);
-  void unregisterDataAccess(SqfliteDA da) => _dataAccess.remove(da);
-
-
   Future<void> _initializeDatabase() async {
     _database = await openDatabase(
       join(await getDatabasesPath(), 'dlsm.db'),
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
+      onConfigure: _onConfigure,
       version: version,
     );
+  }
+
+  Future<void> _onConfigure(Database db) async {
+    await db.execute('PRAGMA foreign_keys = ON');
   }
 
 
@@ -56,15 +66,19 @@ class SqfliteService extends RiverpodService {
 
 
   Future<void> _dropExistingTables(Database db) async {
-    for (SqfliteDA da in _dataAccess) {
+    for (Provider<SqfliteDA> daProvider in _dataAccess) {
+      SqfliteDA da = ref.read(daProvider);
       await da.dropTableIfExists(db);
+      _logger.i('Dropped table ${da.tableName}');
     }
   }
   
 
   Future<void> _createTables(Database db) async {
-    for (SqfliteDA da in _dataAccess) {
+    for (Provider<SqfliteDA> daProvider in _dataAccess) {
+      SqfliteDA da = ref.read(daProvider);
       await da.createTable(db);
+      _logger.i('Created table ${da.tableName}');
     }
   }
 }

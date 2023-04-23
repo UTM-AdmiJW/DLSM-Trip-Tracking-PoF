@@ -6,6 +6,7 @@ export 'services/logger_service.dart';
 export 'services/sqflite_service.dart';
 
 export 'interfaces/sqflite_da.dart';
+export 'interfaces/sqflite_model.dart';
 export 'interfaces/riverpod_service.dart';
 export 'interfaces/riverpod_state_notifier.dart';
 export 'interfaces/riverpod_task_handler_service.dart';

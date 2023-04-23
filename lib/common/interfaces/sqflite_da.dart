@@ -1,8 +1,10 @@
 
+import 'package:dlsm_pof/common/index.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 
-import './riverpod_service.dart';
+import 'sqflite_model.dart';
+import 'riverpod_service.dart';
 import '../services/sqflite_service.dart';
 
 
@@ -10,16 +12,68 @@ import '../services/sqflite_service.dart';
 /// All Sqflite data access classes should extend this abstract class to ensure that in the constructor,
 /// this data access class is registered with the SqfliteService automatically
 /// 
-/// Additionally, SqfliteDA classes should implement the createTable and dropTableIfExists methods
-/// for the entity they are responsible for
-abstract class SqfliteDA extends RiverpodService {
+abstract class SqfliteDA<T extends SqfliteModel> extends RiverpodService {
 
   SqfliteService get sqfliteService => ref.read(sqfliteServiceProvider);
 
-  SqfliteDA(ProviderRef ref) : super(ref) {
-    sqfliteService.registerDataAccess(this);
+  String get tableName;
+  String get createTableQuery;
+  String get dropTableQuery;
+
+
+  SqfliteDA(ProviderRef ref) : super(ref);
+
+  Future<void> createTable(Database db) async => await db.execute(createTableQuery);
+  Future<void> dropTableIfExists(Database db) async => db.execute(dropTableQuery);
+
+
+  Future<List<T>> selectAll();
+
+  Future<int> insert(T model) async {
+    final Database db = await sqfliteService.database;
+
+    return await db.insert(
+      tableName,
+      model.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
-  Future<void> createTable(Database db);
-  Future<void> dropTableIfExists(Database db);
+
+  Future<void> insertAll(List<T> models) async {
+    final Database db = await sqfliteService.database;
+
+    await db.transaction((txn) async {
+      for (T model in models) {
+        await txn.insert(
+          tableName,
+          model.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
+    });
+  }
+
+
+  Future<int> update(T model) async {
+    final Database db = await sqfliteService.database;
+
+    return await db.update(
+      tableName,
+      model.toMap(),
+      where: 'id = ?',
+      whereArgs: [model.id],
+    );
+  }
+
+
+  Future<void> deleteAll() async {
+    final Database db = await sqfliteService.database;
+    await db.delete(tableName);
+  }
+
+  Future<int> count() async {
+    final Database db = await sqfliteService.database;
+    return Sqflite.firstIntValue( await db.rawQuery('SELECT COUNT(*) FROM $tableName') )!;
+  }
 }
