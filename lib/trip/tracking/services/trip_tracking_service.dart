@@ -10,7 +10,7 @@ import 'package:dlsm_pof/trip/foreground_task/index.dart';
 
 
 const int _expiryMinutes = 5;
-const int _distanceFilter = 10;
+const int _distanceFilter = 5;
 
 
 
