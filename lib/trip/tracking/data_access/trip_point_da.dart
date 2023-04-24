@@ -6,6 +6,7 @@ import 'package:dlsm_pof/common/index.dart';
 
 
 
+
 const String tripPointTableName = 'trip_points';
 
 final tripPointDAProvider = Provider<TripPointDA>((ref)=> TripPointDA(ref));

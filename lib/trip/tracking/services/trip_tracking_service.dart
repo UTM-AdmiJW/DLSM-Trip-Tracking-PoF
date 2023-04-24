@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 
 import '../services/trip_point_service.dart';
+import '../services/trip_post_processor_service.dart';
 
 import 'package:dlsm_pof/common/index.dart';
 import 'package:dlsm_pof/trip/core/index.dart';
@@ -26,6 +27,7 @@ class TripTrackingService extends RiverpodService {
   ForegroundTaskService get _foregroundTaskService => ref.read(foregroundTaskServiceProvider);
   GeolocatorService get _geolocatorService => ref.read(geolocatorServiceProvider);
   TripPointService get _tripPointService => ref.read(tripPointServiceProvider);
+  TripPostProcessorService get _tripPostProcessorService => ref.read(tripPostProcessorServiceProvider);
   
   bool get isTripTracingLogicRunning => _positionStreamSubscription != null;
 
@@ -45,15 +47,14 @@ class TripTrackingService extends RiverpodService {
   }
 
 
-  void stop() {
+  Future<void> stop() async {
     _foregroundTaskService.updateForegroundTask("Checking for driving activity...");
 
     _positionStreamSubscription?.cancel();
     _positionStreamSubscription = null;
 
-    // TODO: Process TripPoints recorded throughout this trip, and reset TripPoint database.
-
     _cancelTimer();
+    await _tripPostProcessorService.concludeTrip();
   }
 
 

@@ -66,7 +66,7 @@ class TripPointService extends RiverpodService {
     if (!_isExceededDistanceThreshold(tripPoint) && !_isExceededTimeThreshold(tripPoint)) return false;
 
     // Update total distance travelled
-    totalDistanceTravelled += _getDistanceBetweenLastRecordedTripPoints(tripPoint);
+    totalDistanceTravelled += _getDistanceBetweenLastRecordedTripPoint(tripPoint);
 
     // Populate trip point with the rest of the data
     tripPoint = tripPoint.copyWith(
@@ -115,7 +115,7 @@ class TripPointService extends RiverpodService {
 
   bool _isExceededDistanceThreshold(TripPoint tripPoint) {
     if (_lastRecordedTripPoints.isEmpty) return true;
-    return _getDistanceBetweenLastRecordedTripPoints(tripPoint) > _distanceThreshold;
+    return _getDistanceBetweenLastRecordedTripPoint(tripPoint) > _distanceThreshold;
   }
 
   bool _isExceededTimeThreshold(TripPoint tripPoint) {
@@ -123,7 +123,7 @@ class TripPointService extends RiverpodService {
     return tripPoint.timestamp.difference(_lastRecordedTripPoints.last.timestamp).inSeconds > _timeThresholdSeconds;
   }
 
-  double _getDistanceBetweenLastRecordedTripPoints(TripPoint tripPoint) {
+  double _getDistanceBetweenLastRecordedTripPoint(TripPoint tripPoint) {
     if (_lastRecordedTripPoints.isEmpty) return 0;
 
     return Geolocator.distanceBetween(

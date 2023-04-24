@@ -96,7 +96,7 @@ class _TripPointsPageState extends ConsumerState<TripPointsPage> {
         ),
         title: LayoutBuilder(
           builder: (context, constraints)=> Text(
-            "Trip Points",
+            "Ongoing Trip Points",
             style: TextStyle(
               color: constraints.maxHeight > 90 ? Colors.white : Colors.black,
             )

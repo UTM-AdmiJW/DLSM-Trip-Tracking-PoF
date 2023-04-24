@@ -26,7 +26,7 @@ class HistoryTripDA extends SqfliteDA {
       endLong REAL NOT NULL,
       startTime TEXT NOT NULL,
       endTime TEXT NOT NULL,
-      durationSeconds REAL NOT NULL,
+      durationSeconds INTEGER NOT NULL,
       totalDistance REAL NOT NULL,
       averageSpeed REAL NOT NULL,
       maxSpeed REAL NOT NULL,

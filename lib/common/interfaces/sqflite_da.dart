@@ -1,11 +1,7 @@
 
 import 'package:dlsm_pof/common/index.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'sqflite_model.dart';
-import 'riverpod_service.dart';
-import '../services/sqflite_service.dart';
 
 
 
@@ -28,6 +24,7 @@ abstract class SqfliteDA<T extends SqfliteModel> extends RiverpodService {
 
 
   Future<List<T>> selectAll();
+  
 
   Future<int> insert(T model) async {
     final Database db = await sqfliteService.database;
@@ -40,17 +37,17 @@ abstract class SqfliteDA<T extends SqfliteModel> extends RiverpodService {
   }
 
 
-  Future<void> insertAll(List<T> models) async {
+  Future<List<int>> insertAll(List<T> models) async {
     final Database db = await sqfliteService.database;
 
-    await db.transaction((txn) async {
-      for (T model in models) {
-        await txn.insert(
+    return await db.transaction((txn) async {  
+      return Future.wait(
+        models.map((e) => txn.insert(
           tableName,
-          model.toMap(),
+          e.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace,
-        );
-      }
+        )).toList()
+      );
     });
   }
 
@@ -67,9 +64,9 @@ abstract class SqfliteDA<T extends SqfliteModel> extends RiverpodService {
   }
 
 
-  Future<void> deleteAll() async {
+  Future<int> deleteAll() async {
     final Database db = await sqfliteService.database;
-    await db.delete(tableName);
+    return await db.delete(tableName);
   }
 
   Future<int> count() async {

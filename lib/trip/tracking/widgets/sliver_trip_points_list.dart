@@ -41,8 +41,9 @@ class SliverTripPointList extends StatelessWidget {
         "Speed: ${point.speed.toStringAsFixed(2)} m/s \n"
         "Acc: ${point.acceleration?.toStringAsFixed(2)} m/s², "
         "Dec: ${point.deceleration?.toStringAsFixed(2)} m/s² \n"
-        "Cornering: ${point.cornering?.toStringAsFixed(2)} ,"
-        "Total Distance: ${point.totalDistance?.toStringAsFixed(2)} m"
+        "Cornering: ${point.cornering?.toStringAsFixed(2)},"
+        "Distance: ${point.totalDistance?.toStringAsFixed(2)} m, "
+        "Distracted: ${point.isDistracted}"
       ),
     );
   }

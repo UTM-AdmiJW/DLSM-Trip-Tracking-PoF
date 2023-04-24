@@ -10,7 +10,7 @@ class HistoryTrip extends SqfliteModel {
   final double endLong;
   final DateTime startTime;
   final DateTime endTime;
-  final double durationSeconds;
+  final int durationSeconds;
   final double totalDistance;
   final double averageSpeed;
   final double maxSpeed;
@@ -71,7 +71,7 @@ class HistoryTrip extends SqfliteModel {
     double? endLong,
     DateTime? startTime,
     DateTime? endTime,
-    double? durationSeconds,
+    int? durationSeconds,
     double? totalDistance,
     double? averageSpeed,
     double? maxSpeed,
