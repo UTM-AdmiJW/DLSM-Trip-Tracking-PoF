@@ -1,9 +1,15 @@
+
 import 'dart:async';
+import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:dlsm_pof/common/index.dart';
-import 'package:dlsm_pof/trip/tracking/index.dart';
+import '../abstract/riverpod_service.dart';
+import '../abstract/sqflite_da.dart';
+import '../services/logger_service.dart';
+
+import 'package:dlsm_pof/trip/index.dart';
 
 
 
@@ -20,7 +26,7 @@ class SqfliteService extends RiverpodService {
 
   // Register all data access providers here
   static final List<Provider<SqfliteDA>> _dataAccess = [
-    tripPointDAProvider,
+    ongoingTripPointDAProvider,
     historyTripDAProvider,
     historyTripPointDAProvider,
   ];

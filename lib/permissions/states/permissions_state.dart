@@ -5,10 +5,10 @@ import '../services/permission_service.dart';
 import 'package:dlsm_pof/common/index.dart';
 
 
+
 final permissionsStateProvider = StateNotifierProvider<PermissionsStateNotifier, AsyncValue<PermissionsState>>((ref) {
   return PermissionsStateNotifier(ref);
 });
-
 
 
 
@@ -47,7 +47,6 @@ class PermissionsStateNotifier extends RiverpodStateNotifier<AsyncValue<Permissi
 
   Future<void> updatePermissions() async {
     state = const AsyncValue.loading();
-
     state = await AsyncValue.guard(() async {
       bool isLocationServiceEnabled = await _permissionService.isLocationServiceEnabled();
       bool isLocationPermissionGranted = await _permissionService.isLocationPermissionGranted();

@@ -4,15 +4,16 @@
 
 - This project follows **Feature first approach** for file structure. Directly under the `lib` directory is the features like `dashboard`, `trip_tracking`, `common` and so on.
 
-- Each feature directory should have a `index.dart` file that exports all the required files in that directory. Other features should ever only import from the `index.dart` file. Do not import files from internal directories of a feature.
+- Each feature directory should have a `index.dart` file that exports all the required files in that directory. Other features should ever only import from the `index.dart` file. Do not import the `index.dart` of feature `A` from files in feature `A` - This is how circular dependencies are easily created. Use relative imports instead in that case.
 
 - Follow flutter naming convention. Directories and files should be named in `lowercase_with_underscores` format. The same goes for files. For classes, use `UpperCamelCase` format.
+
 
 - When using riverpod, there should be 2 types of providers:
 
     **1. Services**
 
-    Services are singleton objects that contain reusable logic. For example, `TripTrackingService` that provides methods to start and stop trip tracking.
+    Services are singleton objects that contain reusable logic (which can be business logic). For example, `TripTrackingService` that provides methods to start and stop trip tracking.
 
     - Services are provided the simplest provider type: `Provider`. 
 
@@ -30,7 +31,7 @@
 
     **2. States**
 
-    States are the single source of truth, singleton objects that contain the state of the application. For example, `PermissionState` that provides the current permission status of the app.
+    States are the single source of truth, singleton objects that contain the state of the application. In most cases, States will be consumed by your front-end widgets, as they are automatically updated. For example, `PermissionState` that provides the current permission status of the app, will be shown in the `PermissionPage` widget.
 
     - States are provided using `StateNotifierProvider` provider type.
 

@@ -4,7 +4,7 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 
 import 'package:dlsm_pof/common/index.dart';
 import 'package:dlsm_pof/config/index.dart';
-import 'package:dlsm_pof/trip/foreground_task/index.dart';
+import 'package:dlsm_pof/foreground_task/index.dart';
 import 'package:dlsm_pof/permissions/index.dart';
 
 
@@ -16,6 +16,7 @@ Future<void> main() async {
 
 
 
+// Core of the app, setup riverpod and foreground task
 class DlsmCore extends StatelessWidget {
   const DlsmCore({super.key});
 
